@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LMS Walking-Skeleton Prototype — lms-funnel</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .screen { display: none; }
+  .screen.active { display: block; animation: fade .2s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .locked { filter: grayscale(1); opacity: .55; pointer-events: none; }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+<!-- ===== Prototype toolbar — static flow, always visible ===== -->
+<div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 16px;display:flex;align-items:center;gap:6px;font-size:12px;">
+  <span style="color:#94a3b8;margin-right:2px;font-weight:500;">Prototype:</span>
+  <button onclick="go('s-courses')"  style="padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;">🎓 Student</button>
+  <button onclick="go('s-upload')"   style="padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;">✍️ Teacher</button>
+  <button onclick="go('s-admin')"    style="padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;">🛠 Admin</button>
+  <div style="flex:1;"></div>
+  <button onclick="restart()" style="padding:4px 12px;border-radius:8px;border:1px solid #fca5a5;background:#fef2f2;color:#dc2626;font-weight:700;cursor:pointer;font-size:13px;">↺ Restart</button>
+</div>
+
+<div class="max-w-2xl mx-auto py-8 px-4">
+
+<!-- ============ SCREEN 1 — Course Listing (WS-05) ============ -->
+<section id="s-courses" class="screen active">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div class="font-bold text-lg">My Academy</div>
+      <button onclick="go('s-signup')" class="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg">Sign up</button>
+    </header>
+    <div class="p-6">
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">Courses</h2>
+      <div id="course-grid" class="grid grid-cols-2 gap-4"><!-- rendered by JS --></div>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">Riskiest UX assumption: student will browse & self-serve without a teacher pushing them in.</p>
+</section>
+
+<!-- ============ SCREEN 2 — Sign Up (WS-06) ============ -->
+<section id="s-signup" class="screen">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-md mx-auto">
+    <h1 class="text-xl font-bold mb-1">Create your account</h1>
+    <p class="text-sm text-slate-500 mb-6">So you can enroll in <span class="font-medium" id="signup-course">IELTS Writing</span>.</p>
+    <div class="space-y-4">
+      <label class="block"><span class="text-sm font-medium">Name</span>
+        <input id="su-name" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="Mai Nguyen"></label>
+      <label class="block"><span class="text-sm font-medium">Email</span>
+        <input id="su-email" type="email" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="mai@email.com"></label>
+      <label class="block"><span class="text-sm font-medium">Password</span>
+        <input id="su-pass" type="password" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="••••••••"></label>
+      <button onclick="signup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg">Create account</button>
+      <p class="text-sm text-center text-slate-500">Already have one? <a class="text-indigo-600 font-medium" href="#" onclick="go('s-course')">Log in</a></p>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3 text-center">Riskiest UX assumption: students give a real email vs. dropping off at the form.</p>
+</section>
+
+<!-- ============ SCREEN 3 — Course Page + Enroll (WS-07) ============ -->
+<section id="s-course" class="screen">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <button onclick="go('s-courses')" class="text-sm text-slate-400">&larr; Courses</button>
+      <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full" id="course-loginbadge">logged in</span>
+    </header>
+    <div class="p-6">
+      <h1 class="text-xl font-bold">IELTS Writing</h1>
+      <p class="text-sm text-slate-500 mt-1 mb-6">Master Task 1 &amp; Task 2 essays with short video lessons and a quiz after each one.</p>
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Lessons</h2>
+      <ul id="lesson-list" class="space-y-2"><!-- rendered by JS --></ul>
+      <button id="enroll-btn" onclick="enroll()" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg">Enroll — free</button>
+      <div id="enrolled-banner" class="hidden mt-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-lg px-4 py-3">✅ You're enrolled — all lessons unlocked.</div>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">Riskiest UX assumption: the lock→unlock moment is obvious enough that students know enrollment worked.</p>
+</section>
+
+<!-- ============ SCREEN 4/5 — Lesson Player + Quiz Gate (WS-08/09) ============ -->
+<section id="s-lesson" class="screen">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <header class="px-6 py-4 border-b border-slate-100">
+      <button onclick="go('s-course')" class="text-sm text-slate-400">&larr; IELTS Writing / Lesson 1</button>
+    </header>
+    <div class="p-6">
+      <!-- fake video -->
+      <div class="relative bg-slate-900 rounded-xl aspect-video flex items-center justify-center text-white">
+        <button id="play-btn" onclick="watchVideo()" class="flex flex-col items-center gap-2">
+          <span class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-3xl">▶</span>
+          <span class="text-sm text-white/70">Play (demo — jumps to end)</span>
+        </button>
+        <div id="video-done" class="hidden text-center">
+          <div class="text-4xl">✅</div><div class="text-sm text-white/70 mt-1">Video complete</div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div id="video-bar" class="h-full bg-indigo-500 transition-all duration-300" style="width:0%"></div>
+        </div>
+        <div class="text-xs text-slate-400 mt-1"><span id="video-time">00:00</span> / 09:30</div>
+      </div>
+
+      <!-- quiz gate -->
+      <div id="quiz-gate" class="mt-6 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <div class="font-medium">Quiz — Lesson 1</div>
+          <div id="quiz-hint" class="text-sm text-slate-400">🔒 Finish the video to unlock</div>
+        </div>
+        <button id="quiz-start" onclick="go('s-quiz')" disabled class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed">Start quiz</button>
+      </div>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">Riskiest UX assumption: students watch to completion rather than skip ahead; auto-unlock is noticed.</p>
+</section>
+
+<!-- ============ SCREEN 6 — Quiz + Score (WS-10) ============ -->
+<section id="s-quiz" class="screen">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <span class="font-medium">Quiz — Lesson 1</span>
+      <span class="text-sm text-slate-400" id="quiz-counter">Q 1 of 3</span>
+    </header>
+    <div class="p-6">
+      <div id="quiz-question"><!-- rendered by JS --></div>
+      <div id="quiz-result" class="hidden"><!-- rendered by JS --></div>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">Riskiest UX assumption: immediate score + reveal is the feedback students want (vs. retry first).</p>
+</section>
+
+<!-- ============ SCREEN 7 — Teacher Upload (WS-02/03/04) ⭐ CORE BET ============ -->
+<section id="s-upload" class="screen">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <span class="font-semibold">New Lesson — IELTS Writing</span>
+      <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Teacher</span>
+    </header>
+    <div class="p-6 space-y-5">
+      <label class="block"><span class="text-sm font-medium">Lesson title</span>
+        <input id="up-title" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="Task 1 Overview"></label>
+
+      <div>
+        <span class="text-sm font-medium">Video</span>
+        <button onclick="uploadVideo()" id="up-drop" class="mt-1 w-full border-2 border-dashed border-slate-300 rounded-lg py-6 text-slate-400 hover:border-indigo-400 hover:text-indigo-500">⬆ Drop / choose file (demo)</button>
+        <div id="up-progress" class="hidden mt-2">
+          <div class="h-2 bg-slate-200 rounded-full overflow-hidden"><div id="up-bar" class="h-full bg-emerald-500 transition-all" style="width:0%"></div></div>
+          <div id="up-pct" class="text-xs text-slate-400 mt-1">uploading 0%</div>
+        </div>
+      </div>
+
+      <div>
+        <span class="text-sm font-medium">Quiz</span>
+        <div id="up-questions" class="mt-2 space-y-3"><!-- rendered by JS --></div>
+        <button onclick="addQuestion()" class="mt-2 text-sm text-indigo-600 font-medium">+ Add question</button>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button class="flex-1 border border-slate-300 text-slate-600 font-medium py-2.5 rounded-lg hover:bg-slate-50">Save draft</button>
+        <button onclick="publish()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg">Publish</button>
+      </div>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">⭐ Riskiest UX assumption: a teacher completes this — upload + quiz + publish — in under 5 minutes, on one page, without help.</p>
+</section>
+
+<!-- ============ SCREEN 8 — Admin Dashboard (WS-01/11) ============ -->
+<section id="s-admin" class="screen">
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <span class="font-semibold">Admin</span>
+      <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Admin</span>
+    </header>
+    <div class="p-6">
+      <button onclick="createCourse()" class="mb-6 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg">+ Create course</button>
+      <div id="admin-courses" class="space-y-5"><!-- rendered by JS --></div>
+    </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">Riskiest UX assumption: flat enrolled-list (no completion %) is enough to feel in control for MVP.</p>
+</section>
+
+</div>
+
+<script>
+// ===================== prototype state =====================
+const state = {
+  enrolled: false,
+  videoComplete: false,
+  courses: [
+    { id: 1, title: 'IELTS Writing', lessons: 2 },
+    { id: 2, title: 'IELTS Speaking', lessons: 1 },
+  ],
+  lessons: [
+    { n: 1, title: 'Task 1 Overview' },
+    { n: 2, title: 'Task 2 Essays' },
+  ],
+  quiz: [
+    { q: 'What is the minimum word count for Task 1?', opts: ['100','150','200','250'], answer: 1 },
+    { q: 'Task 2 essays should be at least how many words?', opts: ['150','200','250','300'], answer: 2 },
+    { q: 'How many tasks are in the IELTS Writing test?', opts: ['1','2','3','4'], answer: 1 },
+  ],
+  roster: [
+    { name: 'Mai Nguyen', date: 'Jun 18' },
+    { name: 'Tuan Le', date: 'Jun 19' },
+  ],
+  // teacher upload working state
+  upQuestions: [{ text: '', answer: 1 }],
+};
+let quizIdx = 0, quizScore = 0, quizAnswers = [];
+
+// ===================== navigation =====================
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 's-course') renderLessons();
+  if (id === 's-quiz') startQuiz();
+}
+
+function restart() {
+  // reset all mutable state back to initial values
+  state.enrolled = false;
+  state.videoComplete = false;
+  state.courses = [
+    { id: 1, title: 'IELTS Writing', lessons: 2 },
+    { id: 2, title: 'IELTS Speaking', lessons: 1 },
+  ];
+  state.lessons = [
+    { n: 1, title: 'Task 1 Overview' },
+    { n: 2, title: 'Task 2 Essays' },
+  ];
+  state.roster = [
+    { name: 'Mai Nguyen', date: 'Jun 18' },
+    { name: 'Tuan Le', date: 'Jun 19' },
+  ];
+  state.upQuestions = [{ text: '', answer: 1 }];
+  quizIdx = 0; quizScore = 0; quizAnswers = [];
+  // reset video bar + quiz button
+  document.getElementById('video-bar').style.width = '0%';
+  document.getElementById('video-time').textContent = '00:00';
+  document.getElementById('play-btn').classList.remove('hidden');
+  document.getElementById('video-done').classList.add('hidden');
+  document.getElementById('quiz-hint').innerHTML = '🔒 Finish the video to unlock';
+  document.getElementById('quiz-hint').className = 'text-sm text-slate-400';
+  document.getElementById('quiz-start').disabled = true;
+  // re-render all dynamic sections
+  renderCourses(); renderLessons(); renderUpQuestions(); renderAdmin();
+  go('s-courses');
+}
+
+// ===================== Screen 1: courses =====================
+function renderCourses() {
+  document.getElementById('course-grid').innerHTML = state.courses.map(c => `
+    <div class="border border-slate-200 rounded-xl p-4 hover:border-indigo-300 cursor-pointer" onclick="go('s-signup')">
+      <div class="font-semibold">${c.title}</div>
+      <div class="text-sm text-slate-400 mt-1">${c.lessons} lesson${c.lessons>1?'s':''}</div>
+      <div class="mt-3 text-sm text-indigo-600 font-medium">View →</div>
+    </div>`).join('');
+}
+
+// ===================== Screen 2: signup =====================
+function signup() { go('s-course'); }
+
+// ===================== Screen 3: course page + enroll =====================
+function renderLessons() {
+  const locked = !state.enrolled;
+  document.getElementById('lesson-list').innerHTML = state.lessons.map(l => `
+    <li class="flex items-center justify-between border border-slate-200 rounded-lg px-4 py-3 ${locked?'':'hover:border-indigo-300 cursor-pointer'}"
+        ${locked?'':`onclick="go('s-lesson')"`}>
+      <span>${locked?'🔒':'▶'} ${l.n}. ${l.title}</span>
+      ${locked?'<span class="text-xs text-slate-400">locked</span>':'<span class="text-xs text-indigo-600">open →</span>'}
+    </li>`).join('');
+  document.getElementById('enroll-btn').classList.toggle('hidden', state.enrolled);
+  document.getElementById('enrolled-banner').classList.toggle('hidden', !state.enrolled);
+}
+function enroll() { state.enrolled = true; renderLessons(); }
+
+// ===================== Screen 4/5: lesson player =====================
+function watchVideo() {
+  const bar = document.getElementById('video-bar'), time = document.getElementById('video-time');
+  let pct = 0;
+  document.getElementById('play-btn').classList.add('hidden');
+  const tick = setInterval(() => {
+    pct += 10; bar.style.width = pct + '%';
+    const sec = Math.round(570 * pct/100);
+    time.textContent = String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+    if (pct >= 100) {
+      clearInterval(tick);
+      state.videoComplete = true;
+      document.getElementById('video-done').classList.remove('hidden');
+      document.getElementById('quiz-hint').innerHTML = '✓ Unlocked — test what you just watched';
+      document.getElementById('quiz-hint').classList.replace('text-slate-400','text-emerald-600');
+      document.getElementById('quiz-start').disabled = false;
+    }
+  }, 180);
+}
+
+// ===================== Screen 6: quiz =====================
+function startQuiz() { quizIdx = 0; quizScore = 0; quizAnswers = [];
+  document.getElementById('quiz-result').classList.add('hidden');
+  document.getElementById('quiz-question').classList.remove('hidden');
+  renderQuestion();
+}
+function renderQuestion() {
+  const item = state.quiz[quizIdx];
+  document.getElementById('quiz-counter').textContent = `Q ${quizIdx+1} of ${state.quiz.length}`;
+  document.getElementById('quiz-question').innerHTML = `
+    <p class="font-medium mb-4">${item.q}</p>
+    <div class="space-y-2">${item.opts.map((o,i)=>`
+      <label class="flex items-center gap-3 border border-slate-200 rounded-lg px-4 py-3 cursor-pointer hover:border-indigo-300">
+        <input type="radio" name="q" value="${i}" class="accent-indigo-600"><span>${o}</span></label>`).join('')}
+    </div>
+    <button onclick="nextQuestion()" class="mt-5 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg">
+      ${quizIdx === state.quiz.length-1 ? 'Submit' : 'Next'}</button>`;
+}
+function nextQuestion() {
+  const sel = document.querySelector('input[name=q]:checked');
+  const picked = sel ? parseInt(sel.value) : -1;
+  quizAnswers.push(picked);
+  if (picked === state.quiz[quizIdx].answer) quizScore++;
+  if (quizIdx < state.quiz.length-1) { quizIdx++; renderQuestion(); }
+  else showResult();
+}
+function showResult() {
+  document.getElementById('quiz-question').classList.add('hidden');
+  const r = document.getElementById('quiz-result');
+  r.classList.remove('hidden');
+  r.innerHTML = `
+    <div class="text-center mb-6">
+      <div class="text-sm text-slate-500">Your score</div>
+      <div class="text-4xl font-bold text-indigo-600">${quizScore} / ${state.quiz.length}</div>
+    </div>
+    <div class="space-y-2">${state.quiz.map((item,i)=>{
+      const ok = quizAnswers[i] === item.answer;
+      return `<div class="flex items-start gap-2 text-sm border border-slate-200 rounded-lg px-3 py-2">
+        <span>${ok?'✓':'✗'}</span>
+        <span>Q${i+1} ${ok?'correct':`— correct answer: <b>${item.opts[item.answer]}</b>`}</span></div>`;
+    }).join('')}</div>
+    <button onclick="go('s-course')" class="mt-6 w-full border border-slate-300 text-slate-600 font-medium py-2.5 rounded-lg hover:bg-slate-50">Back to course</button>`;
+}
+
+// ===================== Screen 7: teacher upload =====================
+function renderUpQuestions() {
+  document.getElementById('up-questions').innerHTML = state.upQuestions.map((q,i)=>`
+    <div class="border border-slate-200 rounded-lg p-3">
+      <input value="${q.text}" oninput="state.upQuestions[${i}].text=this.value"
+             class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mb-2 focus:ring-2 focus:ring-indigo-400 outline-none"
+             placeholder="Question ${i+1}">
+      <div class="flex gap-3 text-sm text-slate-500">
+        ${['a','b','c'].map((l,j)=>`
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="up-ans-${i}" ${q.answer===j?'checked':''} onchange="state.upQuestions[${i}].answer=${j}" class="accent-indigo-600">
+            answer ${l}</label>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function addQuestion() { state.upQuestions.push({ text:'', answer:1 }); renderUpQuestions(); }
+function uploadVideo() {
+  const wrap = document.getElementById('up-progress'), bar = document.getElementById('up-bar'), pct = document.getElementById('up-pct');
+  wrap.classList.remove('hidden');
+  let p = 0;
+  const tick = setInterval(()=>{ p+=20; bar.style.width=p+'%'; pct.textContent = p<100?`uploading ${p}%`:'✅ upload complete';
+    if (p>=100) clearInterval(tick); }, 200);
+}
+function publish() {
+  const title = document.getElementById('up-title').value || 'Untitled lesson';
+  // Real effect: published lesson appears on the student course page
+  state.lessons.push({ n: state.lessons.length+1, title });
+  state.courses[0].lessons = state.lessons.length;
+  renderCourses();
+  alertToast(`Published "${title}" — now live on the course page.`);
+  go('s-course');
+}
+
+// ===================== Screen 8: admin =====================
+function renderAdmin() {
+  document.getElementById('admin-courses').innerHTML = state.courses.map(c=>{
+    const roster = c.id===1 ? state.roster : [];
+    return `<div>
+      <div class="font-semibold">${c.title} <span class="text-sm font-normal text-slate-400">— ${roster.length} student${roster.length===1?'':'s'} enrolled</span></div>
+      ${roster.length?`<table class="w-full text-sm mt-2">
+        <thead><tr class="text-left text-slate-400"><th class="font-medium py-1">Name</th><th class="font-medium py-1">Enrolled</th></tr></thead>
+        <tbody>${roster.map(s=>`<tr class="border-t border-slate-100"><td class="py-1.5">${s.name}</td><td class="py-1.5 text-slate-500">${s.date}</td></tr>`).join('')}</tbody>
+      </table>`:'<div class="text-sm text-slate-400 mt-1">No students yet.</div>'}
+    </div>`;
+  }).join('');
+}
+function createCourse() {
+  const name = prompt('Course title:', 'IELTS Listening');
+  if (!name) return;
+  state.courses.push({ id: state.courses.length+1, title: name, lessons: 0 });
+  renderCourses(); renderAdmin();
+}
+
+// ===================== tiny toast =====================
+function alertToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg';
+  t.textContent = msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2600);
+}
+
+// ===================== init =====================
+renderCourses(); renderLessons(); renderUpQuestions(); renderAdmin();
+</script>
+</body>
+</html>
