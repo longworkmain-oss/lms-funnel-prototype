@@ -1,744 +1,85 @@
-<!-- Throwaway validation prototype — Tailwind Play CDN is dev-only, not production code -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LMS Funnel — Walkable Prototype (Three Flows)</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <title>TEC EDU Academy — Prototype Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy:#1a3a5c; --gold:#c9860a; --surface:#f0f4f8; }
+    * { box-sizing: border-box; }
+    body { font-family:'Inter',sans-serif; background:var(--surface); color:#1e293b; margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .wrap { max-width:920px; width:100%; }
+    .header { text-align:center; margin-bottom:8px; }
+    .logo { display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:22px; color:var(--navy); }
+    .logo .dot { width:34px; height:34px; border-radius:9px; background:var(--navy); color:white; display:flex; align-items:center; justify-content:center; font-size:16px; }
+    .sub { color:#64748b; margin-top:6px; font-size:15px; }
+    .lead { background:white; border-radius:16px; padding:18px 22px; margin:22px 0; border-left:4px solid var(--gold); box-shadow:0 1px 3px rgba(0,0,0,.06); font-size:14.5px; line-height:1.6; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    @media (max-width:680px){ .grid{ grid-template-columns:1fr; } }
+    .card { background:white; border-radius:18px; padding:26px; box-shadow:0 1px 3px rgba(0,0,0,.08); border:1px solid #e2e8f0; display:flex; flex-direction:column; transition:transform .15s, box-shadow .15s; }
+    .card:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(26,58,92,.12); }
+    .tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:4px 10px; border-radius:999px; margin-bottom:14px; width:fit-content; }
+    .tag.lofi { background:#dbeafe; color:#1e40af; }
+    .tag.hifi { background:var(--gold); color:white; }
+    .card h2 { margin:0 0 6px; font-size:20px; color:var(--navy); }
+    .card p { color:#475569; font-size:14px; line-height:1.6; margin:0 0 18px; flex:1; }
+    .card ul { margin:0 0 20px; padding-left:18px; color:#475569; font-size:13.5px; line-height:1.7; }
+    .btn { display:block; text-align:center; text-decoration:none; font-weight:700; border-radius:11px; padding:13px; transition:opacity .15s; }
+    .btn.lofi { background:var(--navy); color:white; }
+    .btn.hifi { background:var(--gold); color:white; }
+    .btn:hover { opacity:.9; }
+    .foot { text-align:center; color:#94a3b8; font-size:13px; margin-top:26px; line-height:1.6; }
+    .foot strong { color:#64748b; }
+  </style>
 </head>
-<body x-data="app()" class="bg-slate-100 text-slate-800 min-h-screen">
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="logo"><span class="dot">📚</span> TEC EDU Academy</div>
+      <div class="sub">Prototype review · Bản xem thử để góp ý</div>
+    </div>
 
-  <!-- PROTOTYPE TOOLBAR — static flow, inline styles (works inside review iframes) -->
-  <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 16px;display:flex;align-items:center;gap:6px;font-size:12px;flex-wrap:wrap;">
-    <span style="color:#94a3b8;margin-right:2px;font-weight:500;">Flow:</span>
-    <button @click="go('teacher-course')" style="padding:4px 10px;border-radius:8px;border:1px solid #c7d2fe;background:#eef2ff;cursor:pointer;">✍️ Teacher</button>
-    <button @click="go('catalog')" style="padding:4px 10px;border-radius:8px;border:1px solid #bae6fd;background:#f0f9ff;cursor:pointer;">🎓 Student</button>
-    <button @click="go('admin-cases')" style="padding:4px 10px;border-radius:8px;border:1px solid #fde68a;background:#fffbeb;cursor:pointer;">🛠 Admin</button>
-    <button @click="showAssumptions = !showAssumptions" style="padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;">💡 Assumptions</button>
-    <div style="flex:1;"></div>
-    <span style="color:#cbd5e1;" x-text="(loggedIn?'✓ logged in':'logged out') + ' · case: ' + caseStatus"></span>
-    <button @click="restart()" style="padding:4px 12px;border-radius:8px;border:1px solid #fca5a5;background:#fef2f2;color:#dc2626;font-weight:700;cursor:pointer;font-size:13px;">↺ Restart</button>
+    <div class="lead">
+      👋 Chào anh/chị. Đây là hai bản xem thử của hệ thống học trực tuyến. Hãy bấm vào từng bản để đi qua luồng sử dụng —
+      mỗi màn hình đều có <strong>mô tả ngắn ở đầu trang</strong> giải thích chuyện gì đang xảy ra. Anh/chị có thể để lại bình luận
+      trực tiếp trên trang qua liên kết góp ý chúng tôi gửi kèm.
+    </div>
+
+    <div class="grid">
+      <!-- LO-FI -->
+      <div class="card">
+        <span class="tag lofi">Bản 1 · Khung luồng</span>
+        <h2>Lo-fi — Sơ đồ luồng</h2>
+        <p>Bản khung đơn giản (hộp + nhãn) để <strong>thống nhất luồng sử dụng</strong>: ai làm gì, theo thứ tự nào. Đủ để hiểu cách hệ thống chạy mà chưa cần để ý màu sắc, giao diện.</p>
+        <ul>
+          <li>14 màn hình · 3 vai trò (Giáo viên · Học sinh · Admin)</li>
+          <li>Mô tả từng bước ở đầu mỗi màn hình</li>
+          <li>Nút <strong>↻ Restart</strong> để xem lại từ đầu</li>
+          <li>Chuyển vai trò ở góc dưới phải</li>
+        </ul>
+        <a class="btn lofi" href="./lofi.html">▶ Mở bản Lo-fi</a>
+      </div>
+
+      <!-- HI-FI -->
+      <div class="card">
+        <span class="tag hifi">Bản 2 · Giao diện thật</span>
+        <h2>Hi-fi — Bản trình bày</h2>
+        <p>Bản hoàn thiện với <strong>màu thương hiệu, nội dung tiếng Việt thật và tương tác giống thật</strong> — để anh/chị hình dung sản phẩm chạy trên máy sẽ trông và hoạt động ra sao.</p>
+        <ul>
+          <li>Bắt đầu bằng sơ đồ tổng quan toàn hệ thống</li>
+          <li>Điều hướng <strong>← Trước / Tiếp →</strong> theo kịch bản</li>
+          <li>Điểm nổi bật: theo dõi trạng thái kích hoạt thời gian thực</li>
+          <li>Màn hình xác nhận phạm vi ở cuối</li>
+        </ul>
+        <a class="btn hifi" href="./hifi.html">▶ Mở bản Hi-fi</a>
+      </div>
+    </div>
+
+    <div class="foot">
+      <strong>Lưu ý:</strong> đây là bản xem thử — dùng để thống nhất phạm vi, luồng và giao diện.<br>
+      Chưa phải sản phẩm cuối cùng hay mã nguồn chạy thật.
+    </div>
   </div>
-
-  <!-- handoff legend -->
-  <div style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:5px 16px;font-size:11px;color:#64748b;">
-    Handoffs: (1) Teacher publish → Student catalog · (2) Student request → Admin queue · (3) Admin approve → Student unlock · (4) approved → Teacher enrollment ↑
-  </div>
-
-  <!-- ═══════════════ FLOW A — TEACHER ═══════════════ -->
-
-  <!-- ===== A1. TEACHER — CREATE & PUBLISH COURSE ===== -->
-  <section x-show="screen === 'teacher-course'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-lg font-bold">✍️ Teacher · Courses</h1>
-        <span class="text-xs px-2 py-1 rounded-full" :class="course.published ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'" x-text="course.published ? 'Published' : 'Draft'"></span>
-      </div>
-      <div class="space-y-3">
-        <label class="block text-sm">Title
-          <input x-model="course.title" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
-        </label>
-        <label class="block text-sm">Description
-          <textarea x-model="course.desc" rows="2" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></textarea>
-        </label>
-        <label class="block text-sm">Price (VND)
-          <input x-model="course.price" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
-        </label>
-        <div class="flex items-center gap-3 text-sm pt-1">
-          <span class="font-medium">Status:</span>
-          <label class="flex items-center gap-1"><input type="radio" :checked="!course.published" @click="course.published=false"> Draft</label>
-          <label class="flex items-center gap-1"><input type="radio" :checked="course.published" @click="course.published=true"> Published</label>
-        </div>
-        <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">⚠ Draft is invisible to students — it never shows in the catalog.</p>
-        <div class="flex gap-2 pt-2">
-          <button @click="course.published=false" class="px-4 py-2 rounded-lg border border-slate-300 text-sm">Save draft</button>
-          <button @click="course.published=true; toast('Course published → now in catalog')" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Publish course →</button>
-        </div>
-        <button @click="go('teacher-lesson')" class="text-xs text-indigo-500 underline pt-2">Next: build the curriculum →</button>
-      </div>
-      <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-        <div><span class="font-medium">User sees:</span> a course form with a Draft/Published switch</div>
-        <div><span class="font-medium">User does:</span> fills title + price, saves Draft, later Publishes</div>
-        <div><span class="font-medium">User expects:</span> Draft stays hidden; Publish makes it appear in the student catalog</div>
-        <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> Teacher trusts Draft = nobody sees it (builds privately)</div>
-        <div><span class="font-medium">Boundary:</span> the Teacher owns content — they never approve payments (that's Admin)</div>
-      </div></template>
-    </div>
-  </section>
-
-  <!-- ===== A2. TEACHER — ADD LESSON + MARK PREVIEW ===== -->
-  <section x-show="screen === 'teacher-lesson'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-6">
-      <h1 class="text-lg font-bold mb-4">✍️ <span x-text="course.title"></span> · Lessons</h1>
-      <div class="space-y-2 mb-5">
-        <template x-for="(l, i) in lessons" :key="i">
-          <div class="flex items-center justify-between border border-slate-200 rounded-lg px-3 py-2 text-sm">
-            <span><span x-text="(i+1)+'. '+l.title"></span> <span class="text-slate-400" x-text="l.duration"></span></span>
-            <span class="text-xs">
-              <span x-show="l.preview" class="text-emerald-600 font-medium">▶ Preview</span>
-              <span x-show="!l.preview" class="text-slate-400">🔒 paid</span>
-              <span x-show="!l.published" class="ml-1 text-amber-500">· draft</span>
-            </span>
-          </div>
-        </template>
-      </div>
-      <div class="border-t border-slate-200 pt-4">
-        <p class="text-sm font-semibold mb-2">+ Add lesson</p>
-        <div class="space-y-2">
-          <input x-model="newLesson.title" placeholder="Lesson title" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-          <div class="flex gap-3 text-sm items-center">
-            <input x-model="newLesson.duration" placeholder="06:00" class="w-24 border border-slate-300 rounded-lg px-3 py-2" />
-            <button class="px-3 py-2 rounded-lg border border-slate-300 text-xs">Upload video ▸ <span class="text-slate-400">demo.mp4</span></button>
-            <button class="px-3 py-2 rounded-lg border border-slate-300 text-xs">+ Add MCQ</button>
-          </div>
-          <label class="flex items-center gap-2 text-sm pt-1"><input type="checkbox" x-model="newLesson.preview"> Free preview (playable before paying)</label>
-          <button @click="addLesson()" class="mt-1 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Publish lesson</button>
-        </div>
-        <button @click="go('teacher-content')" class="text-xs text-indigo-500 underline pt-3 block">Next: manage what's posted →</button>
-      </div>
-      <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-        <div><span class="font-medium">User sees:</span> the course's flat lesson list + an add-lesson panel</div>
-        <div><span class="font-medium">User does:</span> uploads a video, adds an MCQ, ticks "Free preview", publishes</div>
-        <div><span class="font-medium">User expects:</span> the lesson shows on the course page; preview ones get a badge</div>
-        <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> Teacher grasps "Free preview" = playable before paying</div>
-        <div><span class="font-medium">Watch for:</span> do they mark at least one preview to sell the course?</div>
-      </div></template>
-    </div>
-  </section>
-
-  <!-- ===== A3. TEACHER — CONTENT INVENTORY (MAINTAIN, RISK) ===== -->
-  <section x-show="screen === 'teacher-content'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border-2 border-indigo-300 p-6">
-      <div class="flex items-center justify-between mb-1">
-        <h1 class="text-lg font-bold">📋 <span x-text="course.title"></span> · Content</h1>
-        <span class="text-xs px-2 py-1 rounded-full" :class="course.published ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'" x-text="course.published ? 'Published' : 'Draft course'"></span>
-      </div>
-      <p class="text-xs text-slate-400 mb-4">Your home base — everything you've posted, and its status.</p>
-      <div class="grid grid-cols-12 text-xs text-slate-400 px-2 pb-1 border-b border-slate-200">
-        <span class="col-span-5">Lesson</span><span class="col-span-3">Status</span><span class="col-span-2">Access</span><span class="col-span-2 text-right">Edit</span>
-      </div>
-      <div class="divide-y divide-slate-100">
-        <template x-for="(l, i) in lessons" :key="i">
-          <div class="grid grid-cols-12 items-center px-2 py-2 text-sm">
-            <span class="col-span-5 flex items-center gap-1">
-              <span class="flex flex-col leading-none">
-                <button @click="moveLesson(i,-1)" :disabled="i===0" class="text-xs" :class="i===0 ? 'text-slate-200' : 'text-slate-500 hover:text-slate-900'">▲</button>
-                <button @click="moveLesson(i,1)" :disabled="i===lessons.length-1" class="text-xs" :class="i===lessons.length-1 ? 'text-slate-200' : 'text-slate-500 hover:text-slate-900'">▼</button>
-              </span>
-              <span><span x-text="(i+1)+'. '+l.title"></span> <span class="text-slate-400 text-xs" x-text="l.duration"></span></span>
-            </span>
-            <span class="col-span-3">
-              <span class="text-xs px-2 py-0.5 rounded-full" :class="l.published ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'" x-text="l.published ? '● Published' : '○ Draft'"></span>
-            </span>
-            <span class="col-span-2">
-              <button @click="togglePreview(i)" class="text-xs px-2 py-0.5 rounded-full border" :class="l.preview ? 'border-emerald-300 text-emerald-700 bg-emerald-50' : 'border-slate-200 text-slate-500'" x-text="l.preview ? '👁 Preview' : '🔒 Paid'"></button>
-            </span>
-            <span class="col-span-2 text-right">
-              <button @click="editLesson(i)" class="text-xs px-2 py-1 rounded-lg border border-slate-300 hover:border-slate-500">✎ Edit</button>
-            </span>
-          </div>
-        </template>
-      </div>
-      <div class="flex gap-2 mt-5">
-        <button @click="go('teacher-lesson')" class="px-3 py-2 rounded-lg border border-slate-300 text-sm">+ Add lesson</button>
-        <button @click="go('teacher-overview')" class="px-3 py-2 rounded-lg border border-slate-300 text-sm">📊 Overview</button>
-        <div class="flex-1"></div>
-        <button @click="go('catalog')" class="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">View as Student →</button>
-      </div>
-      <p class="text-xs text-slate-400 mt-2">Reorder ▲▼, toggle 👁 Preview, or ✎ Edit — changes show live on the student course page.</p>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> every lesson with two badges (publish state + access) + reorder/edit controls</div>
-      <div><span class="font-medium">User does:</span> reorders, flips preview, or clicks ✎ to fix a posted lesson</div>
-      <div><span class="font-medium">User expects:</span> this is the truth of what students currently see</div>
-      <div class="text-indigo-700"><span class="font-semibold">⚠ RISKIEST ASSUMPTION (teacher):</span> teachers RETURN here to maintain over time — not post once and leave</div>
-      <div><span class="font-medium">Watch for:</span> do they treat this as a dashboard, or ignore it after first publish?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== A4. TEACHER — EDIT POSTED LESSON IN PLACE (RISK) ===== -->
-  <section x-show="screen === 'teacher-edit'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border-2 border-indigo-300 p-6">
-      <button @click="go('teacher-content')" class="text-xs text-slate-400 mb-2">← Content</button>
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-base font-bold">Edit · <span x-text="lessons[editIndex] ? lessons[editIndex].title : ''"></span></h1>
-        <span class="text-xs px-2 py-1 rounded-full" :class="lessons[editIndex] && lessons[editIndex].published ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'" x-text="lessons[editIndex] && lessons[editIndex].published ? '● Published' : '○ Draft'"></span>
-      </div>
-      <template x-if="lessons[editIndex]">
-        <div class="space-y-3">
-          <label class="block text-sm">Title
-            <input x-model="editBuf.title" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
-          </label>
-          <label class="block text-sm">Duration
-            <input x-model="editBuf.duration" class="mt-1 w-28 border border-slate-300 rounded-lg px-3 py-2" />
-          </label>
-          <div class="border border-slate-200 rounded-lg p-3">
-            <p class="text-sm font-semibold mb-1">Video</p>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500">intro_<span x-text="editIndex+1"></span>.mp4 ✓</span>
-              <button class="text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed">Replace video <span class="text-slate-300">(R1)</span></button>
-            </div>
-          </div>
-          <div class="border border-slate-200 rounded-lg p-3">
-            <p class="text-sm font-semibold mb-2">Quiz · Q1</p>
-            <input x-model="editBuf.quizQ" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mb-2" />
-            <template x-for="(opt, oi) in editBuf.quizOptions" :key="oi">
-              <label class="flex items-center gap-2 text-sm mb-1">
-                <input type="radio" :checked="editBuf.quizCorrect===oi" @click="editBuf.quizCorrect=oi">
-                <input x-model="editBuf.quizOptions[oi]" class="flex-1 border border-slate-200 rounded-lg px-2 py-1 text-sm" />
-                <span x-show="editBuf.quizCorrect===oi" class="text-emerald-600 text-xs">correct</span>
-              </label>
-            </template>
-          </div>
-          <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">⚠ Changes go live immediately — students keep their progress and this lesson's position.</p>
-          <div class="flex gap-2">
-            <button @click="go('teacher-content')" class="px-4 py-2 rounded-lg border border-slate-300 text-sm">Cancel</button>
-            <button @click="saveLesson()" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Save changes</button>
-          </div>
-        </div>
-      </template>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> the same lesson editor, but on an already-published lesson</div>
-      <div><span class="font-medium">User does:</span> fixes the title / a wrong quiz answer, saves</div>
-      <div><span class="font-medium">User expects:</span> the change goes live without deleting + re-creating the lesson</div>
-      <div class="text-indigo-700"><span class="font-semibold">⚠ RISKIEST ASSUMPTION (teacher):</span> edit-in-place (keeps ID, position, watch stats) is the expected model — vs delete-and-re-add that loses progress</div>
-      <div><span class="font-medium">Watch for:</span> do they trust editing won't reset students? (video swap = R1)</div>
-    </div></template>
-  </section>
-
-  <!-- ===== A5. TEACHER — COURSE OVERVIEW (READ-ONLY) ===== -->
-  <section x-show="screen === 'teacher-overview'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-6">
-      <button @click="go('teacher-content')" class="text-xs text-slate-400 mb-2">← Content</button>
-      <h1 class="text-lg font-bold mb-4">📊 <span x-text="course.title"></span> · Overview</h1>
-      <div class="flex items-center gap-6 mb-5 pb-4 border-b border-slate-200">
-        <div>
-          <p class="text-3xl font-bold" x-text="enrolledCount()"></p>
-          <p class="text-xs text-slate-400">Enrolled students</p>
-        </div>
-        <div class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2">
-          Read-only. The Teacher sees how the course is doing — but never approves payments or grants access (that's Admin).
-        </div>
-      </div>
-      <p class="text-sm font-semibold mb-2">Watched by lesson</p>
-      <div class="space-y-3">
-        <template x-for="(l, i) in lessons" :key="i">
-          <div class="text-sm">
-            <div class="flex items-center justify-between mb-1">
-              <span x-text="(i+1)+'. '+l.title"></span>
-              <span class="text-slate-400 text-xs"><span x-text="watchCount(i)"></span> / <span x-text="enrolledCount()"></span></span>
-            </div>
-            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full bg-sky-500 rounded-full" :style="'width:'+(enrolledCount() ? watchCount(i)/enrolledCount()*100 : 0)+'%'"></div>
-            </div>
-          </div>
-        </template>
-      </div>
-      <p class="text-xs text-slate-500 mt-4 bg-slate-50 border border-slate-200 rounded-lg p-3">ℹ A steep drop after a lesson → go back to 📋 Content and fix or reorder it.</p>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> enrollment count + per-lesson watch numbers — no controls</div>
-      <div><span class="font-medium">User does:</span> reads it; spots a drop-off → goes back to Content to fix</div>
-      <div><span class="font-medium">User expects:</span> a pulse on the course, not a place to manage students</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> counts (not names/PII, not deep analytics) are enough for v1</div>
-      <div><span class="font-medium">Boundary:</span> Teacher = HOW MANY enrolled · Admin roster = WHO has access (distinct)</div>
-    </div></template>
-  </section>
-
-  <!-- ═══════════════ FLOW B — STUDENT ═══════════════ -->
-
-  <!-- ===== B1. STUDENT — CATALOG ===== -->
-  <section x-show="screen === 'catalog'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-lg font-bold">🎓 Browse courses</h1>
-      <span class="text-xs px-2 py-1 rounded-full" :class="loggedIn ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'" x-text="loggedIn ? 'Logged in' : 'Logged out'"></span>
-    </div>
-    <div class="grid grid-cols-2 gap-4">
-      <template x-if="course.published">
-        <button @click="go('course')" class="text-left bg-white rounded-2xl shadow-sm border border-slate-200 p-4 hover:border-slate-400">
-          <div class="h-20 bg-gradient-to-br from-sky-100 to-indigo-100 rounded-lg mb-3"></div>
-          <p class="font-semibold text-sm" x-text="course.title"></p>
-          <p class="text-sm text-slate-500" x-text="formatPrice(course.price)"></p>
-          <span class="inline-block mt-2 text-xs text-sky-600 font-medium">View →</span>
-        </button>
-      </template>
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 opacity-60">
-        <div class="h-20 bg-slate-100 rounded-lg mb-3"></div>
-        <p class="font-semibold text-sm">Business English</p>
-        <p class="text-sm text-slate-500">990,000₫</p>
-      </div>
-    </div>
-    <p class="text-xs text-slate-400 mt-3" x-show="!course.published">Your course is still a Draft — publish it (✍️ Teacher) to see it here.</p>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> a grid of published courses with price</div>
-      <div><span class="font-medium">User does:</span> clicks View on a course</div>
-      <div><span class="font-medium">User expects:</span> a course page showing what's inside</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> price-up-front doesn't scare them off before they see value</div>
-      <div><span class="font-medium">Watch for:</span> do they click in despite the price?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B2 / B7. STUDENT — COURSE PAGE (INDEX + OWN PROGRESS) ===== -->
-  <section x-show="screen === 'course'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <button @click="go('catalog')" class="text-xs text-slate-400 mb-2">← Catalog</button>
-      <h1 class="text-xl font-bold" x-text="course.title"></h1>
-      <p class="text-sm text-slate-500 mb-4" x-text="course.desc"></p>
-
-      <div x-show="caseStatus==='pending'" class="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">⏳ <span class="font-semibold">Activation pending</span> — we're verifying your transfer.</div>
-      <div x-show="caseStatus==='rejected'" class="mb-4 bg-rose-50 border border-rose-200 rounded-lg p-3 text-sm">⚠ <span class="font-semibold">Payment not verified:</span> <span x-text="rejectReason"></span> <button @click="startActivation()" class="ml-1 underline font-semibold text-rose-700">Retry payment</button></div>
-      <div x-show="activated" class="mb-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm flex items-center justify-between">
-        <span>✓ <span class="font-semibold">Activated</span> — all lessons unlocked.</span>
-        <span class="text-xs text-emerald-700 font-medium">Your progress <span x-text="doneCount()"></span>/<span x-text="lessons.length"></span></span>
-      </div>
-
-      <div class="flex items-center justify-between border-y border-slate-200 py-3 mb-3">
-        <span class="text-lg font-bold" x-text="formatPrice(course.price)"></span>
-        <button x-show="!activated && caseStatus!=='pending'" @click="startActivation()" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Activate course</button>
-        <span x-show="caseStatus==='pending'" class="text-sm text-amber-600 font-medium">Pending…</span>
-      </div>
-
-      <p class="text-sm font-semibold mb-2">Curriculum (<span x-text="lessons.length"></span> lessons · <span x-text="totalMins()"></span> min)</p>
-      <div class="space-y-1">
-        <template x-for="(l, i) in lessons" :key="i">
-          <button @click="openLesson(i)" :disabled="!l.preview && !activated"
-            class="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm border"
-            :class="(l.preview || activated) ? 'border-slate-200 hover:border-slate-400 cursor-pointer' : 'border-slate-100 text-slate-400 cursor-not-allowed'">
-            <span><span x-text="(i+1)+'. '+l.title"></span></span>
-            <span class="text-xs flex items-center gap-2">
-              <span x-text="l.duration"></span>
-              <span x-show="l.preview && !activated" class="text-emerald-600 font-medium">▶ Preview</span>
-              <span x-show="!l.preview && !activated">🔒</span>
-              <span x-show="activated && l.done" class="text-emerald-600">✓ done</span>
-              <span x-show="activated && !l.done" class="text-slate-400">▶</span>
-            </span>
-          </button>
-        </template>
-      </div>
-      <p x-show="!activated" class="text-xs text-slate-400 mt-2">🔒 lessons unlock after activation</p>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> the full lesson list; once activated, an "Activated" badge + their OWN progress count</div>
-      <div><span class="font-medium">User does:</span> plays a preview, activates, or (once in) opens lessons and tracks what's left</div>
-      <div><span class="font-medium">User expects:</span> preview plays instantly; after paying, full freedom + remembered progress</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> seeing the full locked index builds trust; all-at-once + self-tracked progress matches expectation</div>
-      <div><span class="font-medium">Boundary:</span> this progress is the Student's own — distinct from the Teacher's count</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B3. STUDENT — PREVIEW PLAYER ===== -->
-  <section x-show="screen === 'preview'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <button @click="go('course')" class="text-xs text-slate-400 mb-2">← <span x-text="course.title"></span></button>
-      <p class="text-sm font-semibold mb-3"><span x-text="currentLesson().title"></span> <span class="text-emerald-600">(Preview)</span></p>
-      <div class="aspect-video bg-slate-900 rounded-xl flex items-center justify-center text-white/80 text-3xl">▶</div>
-      <p class="text-sm text-slate-500 mt-3">This is a free preview. The rest of the course is locked.</p>
-      <button @click="startActivation()" class="mt-3 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Activate course</button>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> a playable preview + a reminder the rest is locked</div>
-      <div><span class="font-medium">User does:</span> watches, then clicks Activate course</div>
-      <div><span class="font-medium">User expects:</span> the preview convinces them it's worth paying for</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> one preview lesson is enough signal to convert</div>
-      <div><span class="font-medium">Watch for:</span> do they activate right after previewing? (preview is open even logged-out)</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B4. STUDENT — SIGN UP / LOG IN ===== -->
-  <section x-show="screen === 'signup'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <button @click="go('course')" class="text-xs text-slate-400 mb-2">← Back</button>
-      <h1 class="text-lg font-bold mb-1">Create your account</h1>
-      <p class="text-sm text-slate-500 mb-4">You need an account to activate a course.</p>
-      <div class="space-y-3">
-        <label class="block text-sm">Name <input x-model="signup.name" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="Mai Tran" /></label>
-        <label class="block text-sm">Email <input x-model="signup.email" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="mai@example.com" /></label>
-        <label class="block text-sm">Password <input type="password" x-model="signup.password" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="••••••••" /></label>
-        <button @click="signUp()" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Sign up & continue →</button>
-        <p class="text-xs text-slate-400">Already have one? <button @click="signUp()" class="underline">Log in</button></p>
-      </div>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> a minimal name/email/password form</div>
-      <div><span class="font-medium">User does:</span> registers (or logs in)</div>
-      <div><span class="font-medium">User expects:</span> to land back on activation, now logged in</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> a signup wall before activation doesn't cause drop-off</div>
-      <div><span class="font-medium">Watch for:</span> do they bail at the wall, or push through to pay?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B5. STUDENT — PAYMENT (REQUEST ACTIVATION, RISK) ===== -->
-  <section x-show="screen === 'payment'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border-2 border-amber-300 p-6">
-      <button @click="go('course')" class="text-xs text-slate-400 mb-2">← Cancel</button>
-      <h1 class="text-lg font-bold mb-1">Activate: <span x-text="course.title"></span></h1>
-      <div class="border border-slate-200 rounded-xl p-4 mb-4 mt-3">
-        <p class="text-sm font-semibold mb-3">Step 1 — Transfer <span x-text="formatPrice(course.price)"></span></p>
-        <div class="flex gap-4">
-          <div class="w-28 h-28 bg-slate-900 rounded-lg grid place-items-center text-white text-xs text-center shrink-0">QR<br>CODE</div>
-          <div class="text-sm space-y-1">
-            <div><span class="text-slate-400">Bank:</span> VietcomBank</div>
-            <div><span class="text-slate-400">Acct:</span> 0123456789</div>
-            <div><span class="text-slate-400">Name:</span> ACADEMY CO</div>
-            <div><span class="text-slate-400">Amount:</span> <span class="font-semibold" x-text="formatPrice(course.price)"></span></div>
-            <div><span class="text-slate-400">Memo:</span> IELTS-yourname</div>
-          </div>
-        </div>
-      </div>
-      <div class="border border-slate-200 rounded-xl p-4 mb-4">
-        <p class="text-sm font-semibold mb-2">Step 2 — Send your transfer receipt to us on Zalo</p>
-        <div class="flex items-center justify-between bg-sky-50 border border-sky-200 rounded-lg px-3 py-2">
-          <span class="text-sm">➤ ZaloOA <span class="font-semibold">@academy.ielts</span></span>
-          <button class="text-xs px-3 py-1 rounded-lg bg-sky-600 text-white">Open Zalo</button>
-        </div>
-        <p class="text-xs text-slate-400 mt-2">We verify your transfer manually and unlock the course.</p>
-      </div>
-      <button @click="confirmSent()" class="w-full px-4 py-3 rounded-lg bg-slate-900 text-white text-sm font-semibold">I've sent the proof →</button>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-100 border-2 border-amber-300 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> bank QR + exact amount + memo, then a Zalo handle to send proof to</div>
-      <div><span class="font-medium">User does:</span> transfers in their banking app, sends receipt to Zalo, taps "I've sent the proof"</div>
-      <div><span class="font-medium">User expects:</span> the admin will see the payment and unlock soon</div>
-      <div class="text-amber-800"><span class="font-semibold">⚠ GLOBAL RISKIEST ASSUMPTION:</span> the two-app, manual-proof, wait-for-human flow feels trustworthy enough that the student completes it instead of abandoning here</div>
-      <div><span class="font-medium">Watch for:</span> do they notice they must ALSO message Zalo (step 2)? do they trust a manual unlock?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B6. STUDENT — PENDING (RISK) ===== -->
-  <section x-show="screen === 'pending'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 text-center">
-        <p class="text-3xl mb-1">⏳</p>
-        <p class="font-semibold">Activation pending</p>
-        <p class="text-sm text-slate-500 mt-1">We're verifying your transfer. You'll get access once an admin approves (usually within a day).</p>
-      </div>
-      <p class="text-sm font-semibold mb-2">Curriculum (still locked)</p>
-      <div class="space-y-1">
-        <template x-for="(l, i) in lessons" :key="i">
-          <div class="flex items-center justify-between rounded-lg px-3 py-2 text-sm border border-slate-100" :class="l.preview ? '' : 'text-slate-400'">
-            <span x-text="(i+1)+'. '+l.title"></span>
-            <span class="text-xs" x-text="l.preview ? '▶ Preview' : '🔒'"></span>
-          </div>
-        </template>
-      </div>
-      <div class="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-500">
-        <span class="font-semibold">Reviewer shortcut:</span> switch to 🛠 Admin (top bar) to approve this case — then come back here.
-      </div>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-100 border-2 border-amber-300 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> a clear "pending" banner; lessons still locked, previews still work</div>
-      <div><span class="font-medium">User does:</span> waits; can leave and come back — status persists</div>
-      <div><span class="font-medium">User expects:</span> it'll flip to unlocked after approval</div>
-      <div class="text-amber-800"><span class="font-semibold">⚠ GLOBAL RISKIEST ASSUMPTION:</span> the wait (no instant gratification) doesn't cause drop-off or refund requests</div>
-      <div><span class="font-medium">Watch for:</span> impatience — do they expect instant access?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B8. STUDENT — LESSON / WATCH ===== -->
-  <section x-show="screen === 'lesson'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <button @click="go('course')" class="text-xs text-slate-400 mb-2">← <span x-text="course.title"></span></button>
-      <p class="text-sm font-semibold mb-3"><span x-text="'Lesson '+(activeLesson+1)+' · '+currentLesson().title"></span></p>
-      <div class="aspect-video bg-slate-900 rounded-xl flex items-center justify-center text-white/80 text-3xl">▶</div>
-      <div class="flex items-center justify-between mt-4">
-        <button @click="markWatched()" class="px-4 py-2 rounded-lg text-sm font-semibold" :class="currentLesson().done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-900 text-white'" x-text="currentLesson().done ? '✓ Watched' : 'Mark watched'"></button>
-        <button @click="go('quiz')" :disabled="!currentLesson().done" class="px-4 py-2 rounded-lg text-sm font-semibold" :class="currentLesson().done ? 'bg-sky-600 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'" x-text="currentLesson().done ? 'Take quiz →' : 'Quiz 🔒 (watch first)'"></button>
-      </div>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> the lesson video + a locked quiz</div>
-      <div><span class="font-medium">User does:</span> watches, clicks Mark watched</div>
-      <div><span class="font-medium">User expects:</span> the quiz unlocks</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> video→quiz gate matches how learners expect to progress</div>
-      <div><span class="font-medium">Watch for:</span> do they look for the quiz after watching?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== B9. STUDENT — QUIZ ===== -->
-  <section x-show="screen === 'quiz'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <button @click="go('lesson')" class="text-xs text-slate-400 mb-2">← Lesson</button>
-      <h1 class="text-base font-bold mb-4">Quiz · <span x-text="currentLesson().title"></span></h1>
-      <template x-for="(q, qi) in quiz" :key="qi">
-        <div class="mb-4">
-          <p class="text-sm font-medium mb-2" x-text="(qi+1)+'. '+q.q"></p>
-          <div class="space-y-1">
-            <template x-for="(opt, oi) in q.options" :key="oi">
-              <label class="flex items-center gap-2 text-sm border border-slate-200 rounded-lg px-3 py-2"
-                :class="quizSubmitted ? (oi===q.correct ? 'bg-emerald-50 border-emerald-300' : (answers[qi]===oi ? 'bg-rose-50 border-rose-300' : '')) : ''">
-                <input type="radio" :name="'q'+qi" :value="oi" @click="answers[qi]=oi" :disabled="quizSubmitted">
-                <span x-text="opt"></span>
-                <span x-show="quizSubmitted && oi===q.correct" class="text-emerald-600 text-xs ml-auto">✓ correct</span>
-              </label>
-            </template>
-          </div>
-        </div>
-      </template>
-      <button x-show="!quizSubmitted" @click="submitQuiz()" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Submit</button>
-      <div x-show="quizSubmitted" class="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
-        Score: <span class="font-bold" x-text="quizScore + '/' + quiz.length"></span> — correct answers highlighted above.
-        <button @click="go('course')" class="ml-2 underline text-sky-600">Back to course</button>
-      </div>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> MCQ questions, then immediate score + correct answers</div>
-      <div><span class="font-medium">User does:</span> answers, submits</div>
-      <div><span class="font-medium">User expects:</span> instant feedback</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> immediate scoring is the reward loop that keeps them going</div>
-      <div><span class="font-medium">Watch for:</span> do they feel rewarded or just tested?</div>
-    </div></template>
-  </section>
-
-  <!-- ═══════════════ FLOW C — ADMIN ═══════════════ -->
-
-  <!-- ===== C1. ADMIN — CASES QUEUE ===== -->
-  <section x-show="screen === 'admin-cases'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-lg font-bold">🛠 Admin · Activation cases</h1>
-        <span class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700" x-text="pendingCount() + ' pending'"></span>
-      </div>
-      <table class="w-full text-sm">
-        <thead><tr class="text-left text-xs text-slate-400 border-b border-slate-200"><th class="py-2">Student</th><th>Course</th><th>Date</th><th></th></tr></thead>
-        <tbody>
-          <tr x-show="caseStatus==='pending'" class="border-b border-slate-100">
-            <td class="py-2">You (test student)</td><td x-text="course.title"></td><td>06-21</td>
-            <td class="text-right"><button @click="go('admin-review')" class="px-3 py-1 rounded-lg bg-slate-900 text-white text-xs">Review</button></td>
-          </tr>
-          <tr class="border-b border-slate-100 text-slate-400">
-            <td class="py-2">Huy Pham</td><td>Business English</td><td>06-20</td>
-            <td class="text-right"><button class="px-3 py-1 rounded-lg border border-slate-200 text-xs">Review</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <p x-show="caseStatus!=='pending'" class="text-xs text-slate-400 mt-3">No live case yet — activate a course as 🎓 Student first, then return here.</p>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> a queue of pending requests (student · course · date)</div>
-      <div><span class="font-medium">User does:</span> clicks Review on a case</div>
-      <div><span class="font-medium">User expects:</span> a screen to confirm payment and approve</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> admin checks Zalo + this queue often enough to keep the wait short</div>
-      <div><span class="font-medium">Boundary:</span> Admin gatekeeps access — they never edit lessons (that's Teacher)</div>
-    </div></template>
-  </section>
-
-  <!-- ===== C2. ADMIN — REVIEW CASE ===== -->
-  <section x-show="screen === 'admin-review'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6">
-      <button @click="go('admin-cases')" class="text-xs text-slate-400 mb-2">← Cases</button>
-      <h1 class="text-base font-bold mb-4">Case: You · <span x-text="course.title"></span> · <span x-text="formatPrice(course.price)"></span></h1>
-      <p class="text-sm font-semibold mb-1">Transfer evidence (from Zalo)</p>
-      <div class="flex items-center gap-3 mb-4">
-        <button @click="evidence=true" class="px-3 py-2 rounded-lg border border-slate-300 text-sm">Upload screenshot</button>
-        <span x-show="evidence" class="text-sm text-emerald-600">receipt.png ✓</span>
-      </div>
-      <label class="block text-sm mb-1">Reject reason (if rejecting)
-        <input x-model="rejectReason" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g. amount doesn't match" />
-      </label>
-      <div class="flex gap-2 mt-4">
-        <button @click="rejectCase()" class="px-4 py-2 rounded-lg border border-rose-300 text-rose-600 text-sm font-semibold">Reject</button>
-        <button @click="approveCase()" :disabled="!evidence" class="px-4 py-2 rounded-lg text-sm font-semibold text-white" :class="evidence ? 'bg-emerald-600' : 'bg-slate-300 cursor-not-allowed'">Approve ✓</button>
-      </div>
-      <p x-show="!evidence" class="text-xs text-amber-600 mt-2">⚠ Approve is disabled until evidence is attached.</p>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> a case with an evidence upload + approve/reject controls</div>
-      <div><span class="font-medium">User does:</span> uploads the Zalo receipt, clicks Approve</div>
-      <div><span class="font-medium">User expects:</span> the student gains access; the Teacher's enrollment count ticks up</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> requiring evidence-before-approve prevents sloppy free grants</div>
-      <div><span class="font-medium">Watch for:</span> do they try to approve without evidence?</div>
-    </div></template>
-  </section>
-
-  <!-- ===== C3. ADMIN — ACCESS ROSTER ===== -->
-  <section x-show="screen === 'admin-roster'" class="max-w-2xl mx-auto py-8 px-4">
-    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6">
-      <h1 class="text-lg font-bold mb-4">🛠 Admin · <span x-text="course.title"></span> · Access roster</h1>
-      <table class="w-full text-sm">
-        <thead><tr class="text-left text-xs text-slate-400 border-b border-slate-200"><th class="py-2">Student</th><th>Activated</th><th>Via</th></tr></thead>
-        <tbody>
-          <tr x-show="activated" class="border-b border-slate-100"><td class="py-2">You (test student)</td><td>06-21</td><td>Bank transfer</td></tr>
-          <tr class="border-b border-slate-100 text-slate-400"><td class="py-2">An Le</td><td>06-21</td><td>Bank transfer</td></tr>
-        </tbody>
-      </table>
-      <p x-show="!activated" class="text-xs text-slate-400 mt-3">No activated students yet — approve a case first.</p>
-      <div class="flex gap-2 mt-4">
-        <button @click="go('course')" class="text-xs text-sky-600 underline">View course as the unlocked student →</button>
-        <button @click="go('teacher-overview')" class="text-xs text-indigo-600 underline">See the Teacher's enrollment count →</button>
-      </div>
-    </div>
-    <template x-if="showAssumptions"><div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <div><span class="font-medium">User sees:</span> who has active access and how they activated</div>
-      <div><span class="font-medium">User does:</span> scans the list (the source of truth for who paid)</div>
-      <div><span class="font-medium">User expects:</span> a definitive paid-access record</div>
-      <div class="text-amber-700"><span class="font-semibold">⚠ Riskiest UX assumption:</span> this list is enough operational visibility for v1</div>
-      <div><span class="font-medium">Boundary:</span> Admin roster = WHO has access · Teacher overview = HOW MANY (distinct lenses)</div>
-    </div></template>
-  </section>
-
-  <!-- toast -->
-  <div x-show="toastMsg" x-transition style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);" class="bg-slate-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg z-50" x-text="toastMsg"></div>
-
-  <script>
-    function app() {
-      return {
-        screen: 'teacher-course',
-        showAssumptions: true,
-        loggedIn: false,
-        toastMsg: '',
-
-        course: { title: 'IELTS Speaking Foundations', desc: 'Master IELTS Speaking Parts 1–3.', price: '1200000', published: false },
-        lessons: [
-          { title: 'Intro to Part 1', duration: '04:12', preview: true,  published: true, done: false },
-          { title: 'Fluency drills',  duration: '11:30', preview: false, published: true, done: false },
-          { title: 'Common mistakes', duration: '08:05', preview: false, published: true, done: false },
-        ],
-        newLesson: { title: '', duration: '', preview: false },
-        quiz: [
-          { q: 'Which answer sounds more fluent?', options: ['Short, hesitant phrases', 'Connected, natural sentences', 'One-word replies'], correct: 1 },
-        ],
-
-        // teacher maintain state
-        editIndex: 0,
-        editBuf: { title: '', duration: '', quizQ: '', quizOptions: [], quizCorrect: 0 },
-
-        // student auth
-        signup: { name: '', email: '', password: '' },
-
-        // activation state
-        caseStatus: 'none',     // none | pending | rejected | approved
-        evidence: false,
-        rejectReason: '',
-        activated: false,
-        activeLesson: 0,
-
-        // quiz state
-        answers: {},
-        quizSubmitted: false,
-        quizScore: 0,
-
-        go(s) { this.screen = s; window.scrollTo(0, 0); },
-        toast(m) { this.toastMsg = m; setTimeout(() => this.toastMsg = '', 1900); },
-        formatPrice(p) { return Number(p).toLocaleString('vi-VN') + '₫'; },
-        totalMins() { return this.lessons.reduce((s, l) => s + Number(l.duration.split(':')[0]), 0); },
-        currentLesson() { return this.lessons[this.activeLesson] || this.lessons[0]; },
-        pendingCount() { return this.caseStatus === 'pending' ? 2 : 1; },
-        doneCount() { return this.lessons.filter(l => l.done).length; },
-
-        // teacher overview (read-only): baseline enrollment + this test student once activated
-        enrolledCount() { return 11 + (this.activated ? 1 : 0); },
-        watchCount(i) { return Math.max(1, this.enrolledCount() - i * 4); },
-
-        addLesson() {
-          if (!this.newLesson.title) { this.toast('Add a title first'); return; }
-          this.lessons.push({ title: this.newLesson.title, duration: this.newLesson.duration || '05:00', preview: this.newLesson.preview, published: true, done: false });
-          this.newLesson = { title: '', duration: '', preview: false };
-          this.toast('Lesson published');
-        },
-        moveLesson(i, dir) {
-          const j = i + dir;
-          if (j < 0 || j >= this.lessons.length) return;
-          const arr = this.lessons;
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-          this.toast('Order saved — students see it');
-        },
-        togglePreview(i) {
-          this.lessons[i].preview = !this.lessons[i].preview;
-          this.toast(this.lessons[i].preview ? 'Now a free preview' : 'Now paid');
-        },
-        editLesson(i) {
-          this.editIndex = i;
-          const q = this.quiz[0];
-          this.editBuf = { title: this.lessons[i].title, duration: this.lessons[i].duration, quizQ: q.q, quizOptions: [...q.options], quizCorrect: q.correct };
-          this.go('teacher-edit');
-        },
-        saveLesson() {
-          const i = this.editIndex;
-          if (!this.editBuf.title) { this.toast('Title required'); return; }
-          this.lessons[i].title = this.editBuf.title;
-          this.lessons[i].duration = this.editBuf.duration || this.lessons[i].duration;
-          this.quiz[0] = { q: this.editBuf.quizQ, options: [...this.editBuf.quizOptions], correct: this.editBuf.quizCorrect };
-          this.toast('Saved — live for students, progress kept');
-          this.go('teacher-content');
-        },
-
-        openLesson(i) {
-          const l = this.lessons[i];
-          if (l.preview && !this.activated) { this.activeLesson = i; this.go('preview'); return; }
-          if (this.activated) { this.activeLesson = i; this.go('lesson'); return; }
-          this.toast('Locked — activate the course');
-        },
-
-        startActivation() {
-          if (!this.loggedIn) { this.go('signup'); return; }
-          if (this.caseStatus !== 'pending') this.caseStatus = 'none';
-          this.go('payment');
-        },
-        signUp() {
-          this.loggedIn = true;
-          this.toast('Logged in');
-          this.startActivation();
-        },
-        confirmSent() {
-          this.caseStatus = 'pending';
-          this.evidence = false;
-          this.rejectReason = '';
-          this.toast('Request created → sent to Admin');
-          this.go('pending');
-        },
-        approveCase() {
-          if (!this.evidence) return;
-          this.caseStatus = 'approved';
-          this.activated = true;
-          this.toast('Approved — student unlocked, enrollment +1');
-          this.go('admin-roster');
-        },
-        rejectCase() {
-          this.caseStatus = 'rejected';
-          if (!this.rejectReason) this.rejectReason = 'Transfer not received';
-          this.toast('Case rejected');
-          this.go('admin-cases');
-        },
-
-        markWatched() { this.lessons[this.activeLesson].done = true; },
-        submitQuiz() {
-          let s = 0;
-          this.quiz.forEach((q, i) => { if (this.answers[i] === q.correct) s++; });
-          this.quizScore = s;
-          this.quizSubmitted = true;
-        },
-
-        restart() {
-          this.screen = 'teacher-course';
-          this.loggedIn = false;
-          this.course = { title: 'IELTS Speaking Foundations', desc: 'Master IELTS Speaking Parts 1–3.', price: '1200000', published: false };
-          this.lessons = [
-            { title: 'Intro to Part 1', duration: '04:12', preview: true,  published: true, done: false },
-            { title: 'Fluency drills',  duration: '11:30', preview: false, published: true, done: false },
-            { title: 'Common mistakes', duration: '08:05', preview: false, published: true, done: false },
-          ];
-          this.newLesson = { title: '', duration: '', preview: false };
-          this.quiz = [
-            { q: 'Which answer sounds more fluent?', options: ['Short, hesitant phrases', 'Connected, natural sentences', 'One-word replies'], correct: 1 },
-          ];
-          this.editIndex = 0;
-          this.editBuf = { title: '', duration: '', quizQ: '', quizOptions: [], quizCorrect: 0 };
-          this.signup = { name: '', email: '', password: '' };
-          this.caseStatus = 'none';
-          this.evidence = false;
-          this.rejectReason = '';
-          this.activated = false;
-          this.activeLesson = 0;
-          this.answers = {};
-          this.quizSubmitted = false;
-          this.quizScore = 0;
-          this.toast('Reset');
-        },
-      };
-    }
-  </script>
 </body>
 </html>

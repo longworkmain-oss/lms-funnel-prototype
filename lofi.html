@@ -1,0 +1,1302 @@
+<!-- Throwaway validation prototype — Tailwind Play CDN is dev-only, not production code -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LMS Funnel — Walkable Prototype</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body
+  x-data="app()"
+  class="bg-slate-50 min-h-screen font-sans text-slate-800"
+>
+
+<!-- ─── NAVBAR ──────────────────────────────────────────────────────────── -->
+<nav class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+  <span class="font-bold text-indigo-700 text-lg tracking-tight">TEC EDU</span>
+  <div class="flex gap-2 items-center text-sm">
+    <template x-if="screen === 'b1-catalog'">
+      <button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium">Log in / Sign up</button>
+    </template>
+    <template x-if="screen !== 'b1-catalog'">
+      <span class="text-slate-500">Nguyễn Văn Minh</span>
+    </template>
+  </div>
+</nav>
+
+<!-- ─── SCREEN CONTAINER ─────────────────────────────────────────────────── -->
+<main class="max-w-4xl mx-auto px-4 py-8 pb-32">
+
+  <!-- ══════════════════════════════════════════════════════════
+       A1 — SET UP COURSE
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'a1-setup'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 11 · Teacher:</span> Create a course — give it a title, price, and learning path — then publish it to the catalog.
+    </div>
+    <!-- breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <span class="cursor-pointer hover:text-indigo-600" @click="go('a1-setup')">My Courses</span>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">New Course</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">New Course</h1>
+        <span class="text-xs bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full font-medium">● Draft — invisible to students</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+          <input type="text" value="Toán 11 — BON 2027" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+          <textarea rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">Full Grade-11 algebra + geometry prep for BON 2027. Covers derivatives, functions, and solid geometry.</textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Price (VNĐ)</label>
+            <input type="text" value="500,000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Roadmap</label>
+            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+              <option selected>BON 2027 · Grade 11</option>
+              <option>BON 2028 · Grade 10</option>
+              <option>BON 2029 · Grade 9</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+        <button class="px-4 py-2 rounded-lg border border-slate-300 text-sm text-slate-600 hover:bg-slate-50">Save Draft</button>
+        <button @click="go('a2-curriculum')" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">Publish course →</button>
+      </div>
+    </div>
+
+    <!-- assumption strip -->
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> a short form — the few facts a course needs before content</p>
+      <p><strong>User does:</strong> fills title/price/roadmap, saves draft (publishes later)</p>
+      <p><strong>User expects:</strong> a draft they can keep building; publishing makes it appear in the catalog under its roadmap</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: assigning to a roadmap up-front feels natural (vs. an afterthought)</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       A2 — CURRICULUM BUILDER
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'a2-curriculum'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 12 · Teacher:</span> Build the course as a 4-tier tree — Chapter › Subtopic › Lesson. Click a lesson to add its content.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button class="text-indigo-600 hover:underline" @click="go('a1-setup')">← Course: "Toán 11 — BON 2027"</button>
+      <span class="ml-auto text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-medium">● Draft</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="flex">
+        <!-- Left sidebar tree -->
+        <div class="w-56 border-r border-slate-200 bg-slate-50 p-3 min-h-96">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Curriculum</p>
+          <div class="space-y-0.5 text-sm">
+            <div class="flex items-center gap-1 font-semibold text-slate-700 cursor-pointer hover:text-indigo-600 py-1">▾ Ch.1 Đại số</div>
+            <div class="ml-3 space-y-0.5">
+              <div class="flex items-center gap-1 text-slate-600 cursor-pointer hover:text-indigo-600 py-0.5">▾ 1.1 Hàm số</div>
+              <div class="ml-3 space-y-0.5">
+                <div @click="go('a3-lesson-editor')" class="flex items-center gap-1 text-slate-600 cursor-pointer hover:text-indigo-600 py-0.5 px-1 rounded hover:bg-indigo-50">
+                  • Bài 1 <span class="ml-auto text-xs bg-emerald-100 text-emerald-700 px-1 rounded">▶P</span>
+                </div>
+                <div @click="go('a3-lesson-editor')" class="flex items-center gap-1 text-slate-600 cursor-pointer hover:text-indigo-600 py-0.5 px-1 rounded hover:bg-indigo-50">
+                  • Bài 2 <span class="ml-auto text-xs text-slate-400">✎</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 text-slate-500 cursor-pointer hover:text-indigo-600 py-0.5">▸ 1.2 Giới hạn</div>
+            </div>
+            <div class="flex items-center gap-1 font-semibold text-slate-700 cursor-pointer hover:text-indigo-600 py-1 mt-1">▸ Ch.2 Hình học</div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-slate-200">
+            <p class="text-xs text-slate-400 mb-1">Badges:</p>
+            <p class="text-xs text-slate-500">▶P = preview &nbsp;● = published</p>
+            <p class="text-xs text-slate-500">✎ = draft</p>
+          </div>
+        </div>
+
+        <!-- Right panel -->
+        <div class="flex-1 p-5">
+          <h2 class="font-semibold text-slate-700 mb-3">Build your course as a 4-tier tree</h2>
+          <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 text-sm text-slate-600 mb-4 space-y-1">
+            <p>📁 <strong>Chapter</strong> (Topic)</p>
+            <p class="ml-4">📂 <strong>Subtopic</strong></p>
+            <p class="ml-8">📄 <strong>Lesson</strong> → has Teaching + Practice</p>
+          </div>
+          <div class="flex gap-2 flex-wrap mb-5">
+            <button class="px-3 py-1.5 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Chapter</button>
+            <button class="px-3 py-1.5 rounded-lg bg-slate-600 text-white text-sm hover:bg-slate-700">+ Subtopic</button>
+            <button @click="go('a3-lesson-editor')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">+ Lesson</button>
+          </div>
+          <p class="text-xs text-slate-400">Click a lesson row in the sidebar to open its editor (→ A3)</p>
+          <div class="mt-4 pt-4 border-t border-slate-100 flex justify-end gap-2">
+            <button @click="go('a4-overview')" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">View overview →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> a left tree (Chapter ▸ Subtopic ▸ Lesson) + a build panel with status badges</p>
+      <p><strong>User does:</strong> adds nodes top-down, clicks a lesson to edit its content (→ A3)</p>
+      <p><strong>User expects:</strong> the tree is the course; structure persists; editing a lesson keeps its place + stats</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 teachers think in this nested tree, not a flat lesson list</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       A3 — LESSON EDITOR
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'a3-lesson-editor'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 13 · Teacher:</span> Add both halves of a lesson on one screen — Teaching (video + worksheets) and Practice (quiz + solution video).
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('a2-curriculum')" class="text-indigo-600 hover:underline">← Curriculum</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Bài 2: "Đạo hàm cơ bản"</span>
+      <span class="text-xs text-slate-400 ml-1">Ch.1 ▸ 1.1 ▸ Bài 2</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
+      <!-- Teaching section -->
+      <div class="border border-slate-200 rounded-xl overflow-hidden">
+        <div class="bg-slate-700 text-white text-sm font-semibold px-4 py-2.5">📹 TEACHING</div>
+        <div class="p-4 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Lecture video</label>
+            <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center text-slate-400 text-sm hover:border-indigo-400 hover:bg-indigo-50 transition cursor-pointer">
+              ⬆ Drop video here or click to upload<br/>
+              <span class="text-xs">MP4, MOV — max 2 GB</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Worksheets (PDF)</label>
+            <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-sm hover:border-indigo-400 hover:bg-indigo-50 transition cursor-pointer">
+              ⬆ Attach PDF(s)
+            </div>
+            <div class="mt-2 flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-lg px-3 py-1.5">
+              📄 bai2.pdf <button class="ml-auto text-slate-400 hover:text-red-500 text-xs">✕ remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Practice section -->
+      <div class="border border-slate-200 rounded-xl overflow-hidden">
+        <div class="bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5">🧪 PRACTICE</div>
+        <div class="p-4 space-y-4">
+          <!-- Q1 -->
+          <div class="bg-slate-50 rounded-xl p-4 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold text-slate-700">Q1</span>
+              <input type="text" value="f(x) = x² → f'(x) = ?" class="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q1e" class="text-indigo-600" /> 2x (incorrect)</label>
+              <label class="flex items-center gap-2 text-sm font-medium text-emerald-700 cursor-pointer"><input type="radio" name="q1e" checked class="text-indigo-600" /> 2x ✓ (correct)</label>
+              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q1e" class="text-indigo-600" /> x</label>
+              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q1e" class="text-indigo-600" /> x²</label>
+            </div>
+          </div>
+          <button class="text-sm text-indigo-600 hover:underline">+ Add question</button>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Solution video (for hard problems)</label>
+            <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-sm hover:border-indigo-400 hover:bg-indigo-50 transition cursor-pointer">
+              ⬆ Upload solution video
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview toggle -->
+      <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+        <input type="checkbox" class="rounded text-indigo-600" />
+        Mark as <strong>free preview</strong> (visible before activation)
+      </label>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+        <button @click="go('a2-curriculum')" class="px-4 py-2 rounded-lg border border-slate-300 text-sm text-slate-600 hover:bg-slate-50">Save draft</button>
+        <button @click="go('a2-curriculum')" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">Publish lesson →</button>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> ONE screen capturing both halves of a lesson at once</p>
+      <p><strong>User does:</strong> drops a video, attaches PDFs, writes ≥1 MCQ, uploads a solution video, publishes</p>
+      <p><strong>User expects:</strong> "post a lesson in minutes, no tech skills" — both halves live together</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 the video→quiz pairing matches the teacher's idea of "a lesson"</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       A4 — COURSE OVERVIEW (read-only)
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'a4-overview'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 14 · Teacher:</span> A read-only pulse on the course — how many students enrolled and which lessons they watch. (Teachers don't approve payments — that's the Admin.)
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('a2-curriculum')" class="text-indigo-600 hover:underline">← Course</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Overview: "Toán 11"</span>
+      <span class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-medium ml-auto">● Published</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="bg-indigo-50 rounded-xl px-5 py-4 text-center">
+          <p class="text-3xl font-bold text-indigo-700">24</p>
+          <p class="text-xs text-slate-500 mt-0.5">enrolled students</p>
+        </div>
+        <div class="text-sm text-slate-500 bg-slate-50 rounded-xl p-3">
+          ⓘ Observation only — you don't approve payments or grant access (that's the Admin).
+        </div>
+      </div>
+
+      <h3 class="font-semibold text-slate-700 mb-3">Per-lesson watch counts</h3>
+      <div class="border border-slate-200 rounded-xl overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-xs text-slate-500 uppercase">
+            <tr>
+              <th class="text-left px-4 py-2.5">Lesson</th>
+              <th class="text-right px-4 py-2.5">Watches</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2.5 text-slate-700">Ch.1 › 1.1 › Bài 1 — Hàm số</td>
+              <td class="px-4 py-2.5 text-right font-medium text-slate-700">22</td>
+            </tr>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2.5 text-slate-700">Ch.1 › 1.1 › Bài 2 — Đạo hàm cơ bản</td>
+              <td class="px-4 py-2.5 text-right">
+                <span class="font-medium text-amber-600">18</span>
+                <span class="text-xs text-slate-400 ml-1">← drop-off</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2.5 text-slate-700">Ch.1 › 1.2 › Bài 3 — Giới hạn</td>
+              <td class="px-4 py-2.5 text-right font-medium text-slate-700">11</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> how many students enrolled + where they watch / drop off</p>
+      <p><strong>User does:</strong> reads — no action; spots a weak lesson to improve</p>
+      <p><strong>User expects:</strong> a pulse on the course; NOT a payment/admin console</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: read-only is enough for the teacher (they won't expect to grant access here)</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B1 — CATALOG
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b1-catalog'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 1 · Student:</span> Browse courses grouped by learning path. Each card shows the price up front. Click a course to see details.
+    </div>
+    <h1 class="text-2xl font-bold text-slate-800 mb-1">Khóa học</h1>
+    <p class="text-slate-500 text-sm mb-6">Chọn lộ trình phù hợp với kỳ thi của bạn</p>
+
+    <!-- Roadmap group: BON 2027 Grade 11 -->
+    <div class="mb-7">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-1 h-5 bg-indigo-500 rounded-full"></div>
+        <h2 class="font-bold text-slate-700">BON 2027 · Lớp 11</h2>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <button @click="go('b2-course-page')" class="bg-white rounded-2xl border border-slate-200 p-4 text-left hover:border-indigo-400 hover:shadow-md transition group">
+          <div class="bg-indigo-100 rounded-xl h-20 mb-3 flex items-center justify-center text-2xl">📐</div>
+          <p class="font-semibold text-slate-800 group-hover:text-indigo-700">Toán 11</p>
+          <p class="text-xs text-slate-500 mt-0.5">Cô Lan · M.Ed</p>
+          <p class="text-sm font-bold text-indigo-600 mt-2">500,000 VNĐ</p>
+        </button>
+        <button @click="go('b2-course-page')" class="bg-white rounded-2xl border border-slate-200 p-4 text-left hover:border-indigo-400 hover:shadow-md transition group">
+          <div class="bg-blue-100 rounded-xl h-20 mb-3 flex items-center justify-center text-2xl">⚡</div>
+          <p class="font-semibold text-slate-800 group-hover:text-indigo-700">Vật lý 11</p>
+          <p class="text-xs text-slate-500 mt-0.5">Thầy Minh · PhD</p>
+          <p class="text-sm font-bold text-indigo-600 mt-2">600,000 VNĐ</p>
+        </button>
+        <button @click="go('b2-course-page')" class="bg-white rounded-2xl border border-slate-200 p-4 text-left hover:border-indigo-400 hover:shadow-md transition group">
+          <div class="bg-green-100 rounded-xl h-20 mb-3 flex items-center justify-center text-2xl">🧪</div>
+          <p class="font-semibold text-slate-800 group-hover:text-indigo-700">Hóa 11</p>
+          <p class="text-xs text-slate-500 mt-0.5">Cô Hoa</p>
+          <p class="text-sm font-bold text-indigo-600 mt-2">550,000 VNĐ</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Roadmap group: BON 2028 Grade 10 -->
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-1 h-5 bg-violet-500 rounded-full"></div>
+        <h2 class="font-bold text-slate-700">BON 2028 · Lớp 10</h2>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <button @click="go('b2-course-page')" class="bg-white rounded-2xl border border-slate-200 p-4 text-left hover:border-indigo-400 hover:shadow-md transition group">
+          <div class="bg-violet-100 rounded-xl h-20 mb-3 flex items-center justify-center text-2xl">📐</div>
+          <p class="font-semibold text-slate-800 group-hover:text-indigo-700">Toán 10</p>
+          <p class="text-xs text-slate-500 mt-0.5">Cô Lan · M.Ed</p>
+          <p class="text-sm font-bold text-indigo-600 mt-2">480,000 VNĐ</p>
+        </button>
+        <button @click="go('b2-course-page')" class="bg-white rounded-2xl border border-slate-200 p-4 text-left hover:border-indigo-400 hover:shadow-md transition group">
+          <div class="bg-sky-100 rounded-xl h-20 mb-3 flex items-center justify-center text-2xl">⚡</div>
+          <p class="font-semibold text-slate-800 group-hover:text-indigo-700">Vật lý 10</p>
+          <p class="text-xs text-slate-500 mt-0.5">Thầy Minh · PhD</p>
+          <p class="text-sm font-bold text-indigo-600 mt-2">560,000 VNĐ</p>
+        </button>
+      </div>
+    </div>
+
+    <p class="text-xs text-slate-400 mt-6 text-center">Draft courses never appear here</p>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> courses grouped under named learning paths, with prices shown openly</p>
+      <p><strong>User does:</strong> picks a roadmap, opens a course card</p>
+      <p><strong>User expects:</strong> paths organize the catalog (not a flat A–Z list); price is visible before clicking</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: roadmap grouping helps students self-locate (vs. overwhelming them)</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B2 — COURSE PAGE
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b2-course-page'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 2 · Student:</span> See the full course outline. Locked lessons (🔒) need activation; one lesson is free to preview. Click "Activate course" to start.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('b1-catalog')" class="text-indigo-600 hover:underline">← Catalog</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Toán 11 — BON 2027</span>
+    </div>
+
+    <!-- Pending banner -->
+    <div x-show="activationStatus === 'pending' || activationStatus === 'under-review'" class="mb-4 bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-center gap-3">
+      <span class="text-amber-600">⏳</span>
+      <span class="text-sm text-amber-800 font-medium">Activation pending — check status</span>
+      <button @click="go('b3b-status')" class="ml-auto text-xs text-indigo-600 hover:underline font-medium">View status →</button>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <!-- Header -->
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800">Toán 11 — BON 2027</h1>
+          <p class="text-sm text-slate-500 mt-1">Cô Lan · M.Ed &nbsp;•&nbsp; Toán học</p>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-bold text-indigo-600">500,000 VNĐ</p>
+          <p class="text-xs text-slate-400">one-time access</p>
+        </div>
+      </div>
+      <p class="text-sm text-slate-600 mb-5">Full Grade-11 algebra + geometry prep for BON 2027. Covers derivatives, functions, and solid geometry with 40+ lessons and practice quizzes.</p>
+
+      <!-- Curriculum tree -->
+      <h3 class="font-semibold text-slate-700 mb-2">Curriculum</h3>
+      <div class="border border-slate-200 rounded-xl overflow-hidden mb-5">
+        <div class="bg-slate-50 px-4 py-2 text-xs text-slate-500 font-medium border-b border-slate-200">Chapter ▸ Subtopic ▸ Lesson</div>
+        <div class="p-3 space-y-1 text-sm">
+          <div class="font-semibold text-slate-700 px-1">▾ Ch.1 Đại số</div>
+          <div class="ml-4 font-medium text-slate-600 px-1">▾ 1.1 Hàm số</div>
+          <div class="ml-8 flex items-center gap-2 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 cursor-pointer hover:bg-emerald-100">
+            <span class="text-emerald-600">▶</span>
+            <span class="text-slate-700">Bài 1 — Hàm số và đồ thị</span>
+            <span class="ml-auto text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-300 font-medium">▶ Preview</span>
+          </div>
+          <div class="ml-8 flex items-center gap-2 px-2 py-1 rounded-lg text-slate-500">
+            <span>🔒</span>
+            <span>Bài 2 — Đạo hàm cơ bản</span>
+          </div>
+          <div class="ml-8 flex items-center gap-2 px-2 py-1 rounded-lg text-slate-500">
+            <span>🔒</span>
+            <span>Bài 3 — Ứng dụng đạo hàm</span>
+          </div>
+          <div class="ml-4 flex items-center gap-2 px-1 py-0.5 text-slate-500">
+            <span>🔒</span>
+            <span class="font-medium">1.2 Giới hạn dãy số</span>
+          </div>
+          <div class="font-semibold text-slate-700 px-1 mt-1">▸ Ch.2 Hình học không gian</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3">
+        <button class="flex-1 px-4 py-2.5 rounded-xl border border-emerald-300 text-emerald-700 font-medium text-sm hover:bg-emerald-50">▶ Play preview</button>
+        <template x-if="activationStatus === 'none' || activationStatus === 'rejected'">
+          <button @click="go('b3a-payment')" class="flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700">Activate course</button>
+        </template>
+        <template x-if="activationStatus === 'pending' || activationStatus === 'under-review'">
+          <button @click="go('b3b-status')" class="flex-1 px-4 py-2.5 rounded-xl bg-amber-500 text-white font-semibold text-sm hover:bg-amber-600">View activation status →</button>
+        </template>
+        <template x-if="activationStatus === 'approved'">
+          <button @click="go('b4-lesson-player')" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700">Enter course →</button>
+        </template>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> the full course shape — what they'd unlock — with one free preview lesson</p>
+      <p><strong>User does:</strong> watches the preview, then clicks "Activate course"</p>
+      <p><strong>User expects:</strong> clicking Activate starts a clear path to pay and get in</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🔴 a free preview + visible locked tree earns enough trust to start paying</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B3a — PAYMENT SCREEN
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b3a-payment'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 3 · Student:</span> Pay by bank transfer using the QR code and memo, then send the proof screenshot to the academy's Zalo. Click "I've sent the transfer".
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('b2-course-page')" class="text-indigo-600 hover:underline">← Toán 11</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Activate course</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <h1 class="text-xl font-bold text-slate-800 mb-1">Complete your payment</h1>
+      <p class="text-sm text-slate-500 mb-6">Transfer the exact amount below, then tap "I've sent the transfer"</p>
+
+      <div class="grid grid-cols-2 gap-6 items-start">
+        <!-- QR placeholder -->
+        <div class="text-center">
+          <div class="bg-slate-100 rounded-2xl p-6 inline-flex flex-col items-center border-2 border-slate-300 mb-2">
+            <div class="bg-white p-3 rounded-xl shadow-inner">
+              <div class="grid grid-rows-7 gap-0" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;width:98px;height:98px;">
+                <div style="background:#111;grid-column:1/4;grid-row:1/4;border-radius:2px"></div>
+                <div style="background:#fff;grid-column:2/3;grid-row:2/3;border-radius:1px"></div>
+                <div style="background:#111;grid-column:5/8;grid-row:1/4;border-radius:2px"></div>
+                <div style="background:#fff;grid-column:6/7;grid-row:2/3;border-radius:1px"></div>
+                <div style="background:#111;grid-column:1/4;grid-row:5/8;border-radius:2px"></div>
+                <div style="background:#fff;grid-column:2/3;grid-row:6/7;border-radius:1px"></div>
+                <div style="background:#111;grid-column:5/6;grid-row:4/5"></div>
+                <div style="background:#111;grid-column:7/8;grid-row:4/5"></div>
+                <div style="background:#111;grid-column:4/5;grid-row:5/6"></div>
+                <div style="background:#111;grid-column:6/7;grid-row:5/6"></div>
+                <div style="background:#111;grid-column:5/8;grid-row:6/8"></div>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Scan to pay — VCB</p>
+          </div>
+        </div>
+
+        <!-- Transfer details -->
+        <div class="space-y-3">
+          <div class="bg-slate-50 rounded-xl p-4 space-y-2.5">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-500">Amount</span>
+              <span class="font-bold text-slate-800">500,000 VNĐ</span>
+            </div>
+            <div class="flex justify-between text-sm items-center">
+              <span class="text-slate-500">Memo</span>
+              <span class="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">ACT-7F3K</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-500">Bank</span>
+              <span class="font-medium text-slate-700">VCB · 1234-567-890</span>
+            </div>
+          </div>
+          <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-200">
+            <p class="text-xs text-emerald-700 font-medium mb-2">Then send proof to:</p>
+            <p class="text-sm font-bold text-emerald-800">ZaloOA @TEC EDU</p>
+            <button class="mt-2 w-full px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600">Open Zalo ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100">
+        <p class="text-xs text-slate-400 mb-3">⓪ Make sure memo <strong>ACT-7F3K</strong> is in your transfer. Request is reviewed within a few hours.</p>
+        <button
+          @click="activationStatus = 'pending'; go('b3b-status')"
+          class="w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+          I've sent the transfer →
+        </button>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> bank QR + exact amount + memo code + ZaloOA contact — everything to complete payment</p>
+      <p><strong>User does:</strong> bank transfers (external), opens Zalo to send proof screenshot, clicks "I've sent"</p>
+      <p><strong>User expects:</strong> the app creates a pending case; they can return to check status</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🔴 PINNED — the student must trust the academy enough to bank-transfer 500k VNĐ with no instant confirmation; memo echo + ZaloOA name are the trust signals</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B3b — ACTIVATION STATUS TRACKER
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b3b-status'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 4 · Student:</span> Track the activation request live — Payment sent → Under review → Activated. No more wondering if it went through.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('b2-course-page')" class="text-indigo-600 hover:underline">← Toán 11</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Activation status</span>
+    </div>
+
+    <!-- Course header -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-4 flex items-center gap-4">
+      <div class="bg-indigo-100 rounded-xl w-14 h-14 flex items-center justify-center text-2xl flex-shrink-0">📐</div>
+      <div>
+        <h2 class="font-bold text-slate-800">Toán 11 — BON 2027</h2>
+        <p class="text-sm text-slate-500">Cô Lan · M.Ed</p>
+      </div>
+    </div>
+
+    <!-- Status ladder -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+      <h3 class="font-semibold text-slate-700 mb-4">Your activation status</h3>
+
+      <!-- Step 1: Payment sent — always green -->
+      <div class="flex items-start gap-3 mb-3">
+        <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">✔</div>
+        <div>
+          <p class="text-sm font-semibold text-emerald-700">Payment sent</p>
+          <p class="text-xs text-slate-500">Amount: 500,000 VNĐ &nbsp;·&nbsp; Memo: <span class="font-mono font-bold text-indigo-600">ACT-7F3K</span></p>
+        </div>
+      </div>
+      <div class="w-0.5 h-4 bg-slate-200 ml-3.5 mb-3"></div>
+
+      <!-- Step 2: Under review -->
+      <div class="flex items-start gap-3 mb-3">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5"
+          :class="{
+            'bg-amber-400': activationStatus === 'pending' || activationStatus === 'under-review',
+            'bg-emerald-500': activationStatus === 'approved',
+            'bg-red-500': activationStatus === 'rejected',
+            'bg-slate-300': activationStatus === 'none'
+          }">
+          <span x-show="activationStatus === 'pending' || activationStatus === 'under-review'">●</span>
+          <span x-show="activationStatus === 'approved'">✔</span>
+          <span x-show="activationStatus === 'rejected'">✕</span>
+          <span x-show="activationStatus === 'none'">○</span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold"
+            :class="{
+              'text-amber-700': activationStatus === 'pending' || activationStatus === 'under-review',
+              'text-emerald-700': activationStatus === 'approved',
+              'text-red-600': activationStatus === 'rejected',
+              'text-slate-400': activationStatus === 'none'
+            }">
+            <span x-show="activationStatus !== 'rejected'">Under review</span>
+            <span x-show="activationStatus === 'rejected'">Rejected</span>
+          </p>
+          <p x-show="activationStatus === 'pending' || activationStatus === 'under-review'" class="text-xs text-slate-500">Admin is checking your transfer (usually a few hours)</p>
+          <p x-show="activationStatus === 'approved'" class="text-xs text-slate-500">Verified by @TEC EDU</p>
+          <p x-show="activationStatus === 'rejected'" class="text-xs text-red-600 font-medium" x-text="rejectionReason || 'Memo does not match any pending request. Please retry.'"></p>
+        </div>
+      </div>
+      <div class="w-0.5 h-4 bg-slate-200 ml-3.5 mb-3"></div>
+
+      <!-- Step 3: Activated -->
+      <div class="flex items-start gap-3">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5"
+          :class="activationStatus === 'approved' ? 'bg-emerald-500' : 'bg-slate-300'">
+          <span x-show="activationStatus === 'approved'">✔</span>
+          <span x-show="activationStatus !== 'approved'">○</span>
+        </div>
+        <p class="text-sm font-semibold mt-0.5"
+          :class="activationStatus === 'approved' ? 'text-emerald-700' : 'text-slate-400'">Activated</p>
+      </div>
+
+      <!-- Meta -->
+      <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
+        Reviewed by: <strong class="text-slate-700">@TEC EDU</strong>
+      </div>
+
+      <!-- Approved CTA -->
+      <div x-show="activationStatus === 'approved'" class="mt-4 space-y-3">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-sm text-emerald-700 font-medium text-center">
+          🎉 Your course is now unlocked — all lessons are ready!
+        </div>
+        <button @click="go('b4-lesson-player')" class="w-full px-4 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+          Enter course →
+        </button>
+      </div>
+
+      <!-- Rejected CTA -->
+      <div x-show="activationStatus === 'rejected'" class="mt-4 space-y-3">
+        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+          <strong>Reason:</strong> <span x-text="rejectionReason || 'Memo does not match any pending request.'"></span>
+        </div>
+        <button @click="activationStatus = 'none'; go('b3a-payment')" class="w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+          Retry payment →
+        </button>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> course page, but "Activate" is replaced by the live status ladder</p>
+      <p><strong>User does:</strong> reads the status — amount + memo echoed so they know it's their request</p>
+      <p><strong>User expects:</strong> the ladder updates automatically when Admin acts; no need to contact anyone</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🔴 PINNED — the status ladder (vs. the competitor's silence) is what keeps the student from abandoning during the wait. If this doesn't reassure, the whole manual-activation model fails.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B4 — LESSON PLAYER (Teaching)
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b4-lesson-player'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 7 · Student:</span> Once approved, the course unlocks. Watch the lesson video and download worksheets. Practice unlocks after the video.
+    </div>
+    <div class="text-xs text-slate-500 mb-3 flex items-center gap-1 flex-wrap">
+      <button @click="go('b2-course-page')" class="hover:text-indigo-600">Toán 11</button>
+      <span>›</span><span>Ch.1 Đại số</span><span>›</span><span>1.1 Hàm số</span><span>›</span>
+      <span class="text-slate-700 font-medium">Bài 2 — Đạo hàm cơ bản</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="flex min-h-96">
+        <!-- Sidebar -->
+        <div class="w-52 border-r border-slate-200 bg-slate-50 p-3 overflow-y-auto flex-shrink-0">
+          <p class="text-xs font-semibold text-slate-500 uppercase mb-2 tracking-wide">Lessons</p>
+          <div class="space-y-0.5 text-sm">
+            <div class="font-semibold text-slate-700 py-0.5">▾ Ch.1 Đại số</div>
+            <div class="ml-2 text-slate-600 py-0.5">▾ 1.1 Hàm số</div>
+            <div class="ml-4 flex items-center gap-1.5 px-2 py-1 rounded-lg text-emerald-700 bg-emerald-50">
+              <span class="text-xs">✓</span> Bài 1
+            </div>
+            <div class="ml-4 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-indigo-100 text-indigo-700 font-medium">
+              <span class="text-xs">▶</span> Bài 2
+            </div>
+            <div class="ml-4 flex items-center gap-1.5 px-2 py-1 rounded-lg text-slate-500">
+              <span class="text-xs">•</span> Bài 3
+            </div>
+            <div class="ml-2 text-slate-600 py-0.5">▸ 1.2 Giới hạn</div>
+            <div class="font-semibold text-slate-700 py-0.5 mt-1">▸ Ch.2 Hình học</div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex-1 p-5 space-y-4 min-w-0">
+          <h2 class="font-bold text-slate-800">Bài 2 — Đạo hàm cơ bản</h2>
+
+          <!-- Video placeholder -->
+          <div class="bg-slate-900 rounded-2xl aspect-video flex flex-col items-center justify-center text-white">
+            <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-3xl mb-2 cursor-pointer hover:bg-white/30 transition">▶</div>
+            <p class="text-sm text-slate-300">Lecture video — Đạo hàm cơ bản</p>
+            <p class="text-xs text-slate-500 mt-1">34:22</p>
+          </div>
+
+          <!-- Mark watched -->
+          <div class="flex items-center gap-3">
+            <button
+              @click="videoWatched = true"
+              :class="videoWatched
+                ? 'bg-emerald-100 text-emerald-700 border border-emerald-300 cursor-default'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700'"
+              class="px-4 py-2 rounded-xl text-sm font-medium transition">
+              <span x-text="videoWatched ? '✓ Watched' : 'Mark watched ✓'"></span>
+            </button>
+            <span x-show="videoWatched" class="text-xs text-emerald-600 font-medium">Lesson marked complete!</span>
+          </div>
+
+          <!-- Worksheets -->
+          <div class="bg-slate-50 rounded-xl p-3 flex items-center gap-2 text-sm border border-slate-200">
+            <span>📄</span>
+            <span class="text-slate-700">bai2-worksheet.pdf</span>
+            <button class="ml-auto text-indigo-600 hover:underline text-xs">⬇ Download</button>
+          </div>
+
+          <!-- Practice gate -->
+          <div class="border-t border-slate-200 pt-4">
+            <div x-show="!videoWatched" class="flex items-center gap-2 text-sm text-slate-500 mb-3 bg-slate-50 rounded-xl p-3">
+              🔒 Practice unlocks after you watch the video
+            </div>
+            <div x-show="videoWatched" class="flex items-center gap-2 text-sm text-emerald-600 font-medium mb-3 bg-emerald-50 rounded-xl p-3 border border-emerald-200">
+              ✓ Practice unlocked — ready to quiz yourself!
+            </div>
+            <button
+              @click="go('b5-practice')"
+              :disabled="!videoWatched"
+              class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
+              → Practice
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3 flex justify-end">
+      <button @click="go('b6-progress')" class="text-sm text-indigo-600 hover:underline">View my progress →</button>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> the unlocked tree on the left, the lecture + worksheets on the right</p>
+      <p><strong>User does:</strong> watches the video (marks watched), downloads the PDF, moves to Practice</p>
+      <p><strong>User expects:</strong> finishing the video opens the quiz; the tree tracks what's done (✓)</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 students accept "watch fully before quiz" gating as natural</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B5 — PRACTICE (quiz + solution)
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b5-practice'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 8 · Student:</span> Answer the quiz tied to the lesson, get an instant score, and watch the solution video for hard questions.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('b4-lesson-player')" class="text-indigo-600 hover:underline">← Bài 2</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Practice</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <h2 class="font-bold text-slate-800 mb-1">Practice — Bài 2 "Đạo hàm cơ bản"</h2>
+      <p class="text-sm text-slate-500 mb-5">Answer all questions, then submit for instant scoring.</p>
+
+      <!-- Q1 -->
+      <div class="mb-5 p-4 rounded-xl border border-slate-200 bg-slate-50">
+        <p class="text-sm font-semibold text-slate-800 mb-3">Q1. Nếu f(x) = x², thì f'(x) = ?</p>
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 0 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 0, 'border-slate-200': quizAnswers.q1 !== 0 || quizSubmitted }">
+            <input type="radio" name="q1s" :value="0" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">A</span>
+            <span>2x</span>
+          </label>
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 1 && !quizSubmitted, 'border-emerald-500 bg-emerald-50': quizSubmitted && quizAnswers.q1 === 1, 'border-emerald-300 bg-emerald-50': quizSubmitted && quizAnswers.q1 !== 1, 'border-slate-200': quizAnswers.q1 !== 1 && !quizSubmitted }">
+            <input type="radio" name="q1s" :value="1" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">B</span>
+            <span>2x</span>
+            <span x-show="quizSubmitted" class="ml-auto text-xs text-emerald-600 font-bold">✓ correct</span>
+          </label>
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 2 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 2, 'border-slate-200': quizAnswers.q1 !== 2 || quizSubmitted }">
+            <input type="radio" name="q1s" :value="2" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">C</span>
+            <span>x</span>
+          </label>
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 3 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 3, 'border-slate-200': quizAnswers.q1 !== 3 || quizSubmitted }">
+            <input type="radio" name="q1s" :value="3" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">D</span>
+            <span>x²</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="mb-5 p-4 rounded-xl border border-slate-200 bg-slate-50">
+        <p class="text-sm font-semibold text-slate-800 mb-3">Q2. Đạo hàm của g(x) = 3x³ tại x = 2 là?</p>
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 0 && !quizSubmitted, 'border-emerald-500 bg-emerald-50': quizSubmitted && quizAnswers.q2 === 0, 'border-emerald-300 bg-emerald-50': quizSubmitted && quizAnswers.q2 !== 0, 'border-slate-200': quizAnswers.q2 !== 0 && !quizSubmitted }">
+            <input type="radio" name="q2s" :value="0" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">A</span>
+            <span>36</span>
+            <span x-show="quizSubmitted" class="ml-auto text-xs text-emerald-600 font-bold">✓ correct</span>
+          </label>
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 1 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 1, 'border-slate-200': quizAnswers.q2 !== 1 || quizSubmitted }">
+            <input type="radio" name="q2s" :value="1" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">B</span>
+            <span>24</span>
+          </label>
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 2 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 2, 'border-slate-200': quizAnswers.q2 !== 2 || quizSubmitted }">
+            <input type="radio" name="q2s" :value="2" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">C</span>
+            <span>12</span>
+          </label>
+          <label
+            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 3 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 3, 'border-slate-200': quizAnswers.q2 !== 3 || quizSubmitted }">
+            <input type="radio" name="q2s" :value="3" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+            <span class="font-medium text-slate-500 w-5">D</span>
+            <span>9</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div x-show="!quizSubmitted">
+        <button
+          @click="submitQuiz()"
+          :disabled="quizAnswers.q1 === null || quizAnswers.q2 === null"
+          class="w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed">
+          Submit
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div x-show="quizSubmitted" class="space-y-3">
+        <div :class="quizScore === 2 ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-amber-50 border-amber-300 text-amber-800'" class="border rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold" x-text="quizScore + ' / 2'"></p>
+          <p class="text-sm mt-1" x-text="quizScore === 2 ? 'Perfect score! 🎉' : 'Review the solution video below to understand your misses.'"></p>
+        </div>
+
+        <!-- Solution video -->
+        <div class="bg-slate-900 rounded-2xl p-5 flex items-center gap-4 text-white cursor-pointer hover:bg-slate-800 transition">
+          <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-xl hover:bg-white/30 flex-shrink-0">▶</div>
+          <div>
+            <p class="text-sm font-semibold">▶ Watch solution video</p>
+            <p class="text-xs text-slate-400">Step-by-step walkthrough for Q1 &amp; Q2</p>
+          </div>
+        </div>
+
+        <button @click="go('b6-progress')" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-600 hover:bg-slate-50">
+          View my progress →
+        </button>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> the quiz tied to the lesson they just watched, then immediate scoring</p>
+      <p><strong>User does:</strong> answers, submits, reviews correct answers, optionally watches the solution video</p>
+      <p><strong>User expects:</strong> instant feedback + a way to understand misses (solution video)</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 immediate score + solution video is the "complete the lesson" payoff</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       B6 — PROGRESS
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'b6-progress'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 9 · Student:</span> Track personal progress, rolled up by chapter and subtopic — see exactly what's left.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('b4-lesson-player')" class="text-indigo-600 hover:underline">← Toán 11</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">My progress</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-bold text-slate-800">My progress — Toán 11</h2>
+        <div class="bg-indigo-50 rounded-xl px-3 py-1.5 text-xs font-medium text-indigo-700">3 / 9 lessons done</div>
+      </div>
+
+      <div class="space-y-2 text-sm">
+        <!-- Ch.1 -->
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="flex items-center justify-between font-semibold text-slate-700 mb-2">
+            <span>▾ Ch.1 Đại số</span>
+            <span class="text-xs text-emerald-600 font-medium">3/5 ✓</span>
+          </div>
+          <div class="ml-3 space-y-1">
+            <!-- 1.1 -->
+            <div class="flex items-center justify-between text-slate-600 py-1 px-2 bg-emerald-50 rounded-lg border border-emerald-200">
+              <span class="font-medium">▾ 1.1 Hàm số</span>
+              <span class="text-xs text-emerald-600 font-medium">2/2 ✓</span>
+            </div>
+            <div class="ml-4 space-y-0.5 py-1">
+              <div class="flex items-center gap-2 text-emerald-700">
+                <span class="text-xs w-4">✓</span> <span>Bài 1</span>
+              </div>
+              <div class="flex items-center gap-2 text-emerald-700">
+                <span class="text-xs w-4">✓</span> <span>Bài 2</span>
+              </div>
+            </div>
+            <!-- 1.2 -->
+            <div class="flex items-center justify-between text-slate-600 py-1 px-2 rounded-lg">
+              <span class="font-medium">▾ 1.2 Giới hạn</span>
+              <span class="text-xs text-amber-600 font-medium">1/3 ▶</span>
+            </div>
+            <div class="ml-4 space-y-0.5 py-1">
+              <div class="flex items-center gap-2 text-emerald-700">
+                <span class="text-xs w-4">✓</span> <span>Bài 3</span>
+              </div>
+              <div class="flex items-center gap-2 text-indigo-700 font-medium">
+                <span class="text-xs w-4">▶</span> <span>Bài 4 <em class="text-xs text-slate-400 font-normal">(current)</em></span>
+              </div>
+              <div class="flex items-center gap-2 text-slate-400">
+                <span class="text-xs w-4">•</span> <span>Bài 5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ch.2 -->
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="flex items-center justify-between font-semibold text-slate-700">
+            <span>▸ Ch.2 Hình học không gian</span>
+            <span class="text-xs text-slate-400">0/4</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> their completion rolled up the same tree they learn in</p>
+      <p><strong>User does:</strong> reads — sees what's left, jumps to the next ▶ lesson</p>
+      <p><strong>User expects:</strong> progress mirrors the curriculum structure, not a flat % bar</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: roll-up by subtopic/chapter is more motivating than a single number</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       C1 — PENDING QUEUE (Admin)
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'c1-queue'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 5 · Admin:</span> Every payment request lands here as a pending case. The admin opens one to review it.
+    </div>
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h1 class="text-xl font-bold text-slate-800">Activation queue</h1>
+        <p class="text-sm text-slate-500 mt-0.5">Cases awaiting evidence + decision</p>
+      </div>
+      <span class="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full">
+        <span x-text="(activationStatus === 'approved' || activationStatus === 'rejected') ? '2' : '3'"></span> pending
+      </span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-xs text-slate-500 uppercase border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3">Student</th>
+            <th class="text-left px-4 py-3">Course</th>
+            <th class="text-left px-4 py-3">Date</th>
+            <th class="text-left px-4 py-3">Status</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <!-- Row 1: Minh (our student) — only pending -->
+          <tr x-show="activationStatus !== 'approved' && activationStatus !== 'rejected'" class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-slate-700">Minh N.</td>
+            <td class="px-4 py-3 text-slate-600">Toán 11</td>
+            <td class="px-4 py-3 text-slate-500">06-23 09:14</td>
+            <td class="px-4 py-3"><span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium">● Pending</span></td>
+            <td class="px-4 py-3 text-right">
+              <button @click="evidenceAttached = false; rejectReason = ''; go('c2-case-detail')" class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700">Review</button>
+            </td>
+          </tr>
+          <!-- Row 2 -->
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-slate-700">Hoa T.</td>
+            <td class="px-4 py-3 text-slate-600">Vật lý 11</td>
+            <td class="px-4 py-3 text-slate-500">06-23 08:50</td>
+            <td class="px-4 py-3"><span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium">● Pending</span></td>
+            <td class="px-4 py-3 text-right">
+              <button class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700">Review</button>
+            </td>
+          </tr>
+          <!-- Row 3 -->
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-slate-700">Lan P.</td>
+            <td class="px-4 py-3 text-slate-600">Toán 11</td>
+            <td class="px-4 py-3 text-slate-500">06-22 19:02</td>
+            <td class="px-4 py-3"><span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium">● Pending</span></td>
+            <td class="px-4 py-3 text-right">
+              <button class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700">Review</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div x-show="activationStatus === 'approved' || activationStatus === 'rejected'" class="px-4 py-2 bg-slate-50 text-xs text-slate-400 text-center border-t border-slate-100">
+        Minh N. case resolved — showing 2 remaining cases
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> every pending request with who / which course / when</p>
+      <p><strong>User does:</strong> clicks Review on the oldest/easiest case</p>
+      <p><strong>User expects:</strong> a worklist that empties as decisions are made</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: the queue is the Admin's whole day-1 job (simple table is enough)</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       C2 — CASE DETAIL (Admin)
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'c2-case-detail'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 6 · Admin:</span> The admin attaches the transfer proof, then approves. Approve is locked until evidence is attached — no accidental free access.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('c1-queue')" class="text-indigo-600 hover:underline">← Queue</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Case: Minh N. · Toán 11 · 500k</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
+      <!-- Case summary -->
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div class="bg-slate-50 rounded-xl p-3">
+          <p class="text-xs text-slate-500 mb-0.5">Student</p>
+          <p class="font-semibold text-slate-800">Minh N. (nguyenminh@gmail.com)</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-3">
+          <p class="text-xs text-slate-500 mb-0.5">Course</p>
+          <p class="font-semibold text-slate-800">Toán 11 — BON 2027 · 500,000 VNĐ</p>
+        </div>
+        <div class="bg-indigo-50 rounded-xl p-3 border border-indigo-200">
+          <p class="text-xs text-slate-500 mb-0.5">Memo expected</p>
+          <p class="font-mono font-bold text-indigo-700 text-base">ACT-7F3K</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-3">
+          <p class="text-xs text-slate-500 mb-0.5">Received</p>
+          <p class="font-semibold text-slate-800">06-23 09:14</p>
+        </div>
+      </div>
+
+      <!-- Evidence upload -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Transfer evidence (from Zalo)</label>
+        <div
+          x-show="!evidenceAttached"
+          @click="evidenceAttached = true"
+          class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center text-slate-400 text-sm hover:border-indigo-400 hover:bg-indigo-50 transition cursor-pointer">
+          ⬆ Click to attach screenshot
+        </div>
+        <div x-show="evidenceAttached" class="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-sm">
+          <span class="text-emerald-600 text-lg">📎</span>
+          <span class="text-emerald-800 font-medium">proof_minh_06-23.jpg</span>
+          <button @click="evidenceAttached = false" class="ml-auto text-slate-400 hover:text-red-500 text-xs">✕ remove</button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="space-y-3 pt-2 border-t border-slate-100">
+        <button
+          @click="approveCase()"
+          :disabled="!evidenceAttached"
+          :class="evidenceAttached ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
+          class="w-full px-4 py-3 rounded-xl font-semibold text-sm transition">
+          <span x-show="!evidenceAttached">✓ Approve → grant access &nbsp;(attach evidence first)</span>
+          <span x-show="evidenceAttached">✓ Approve → grant access</span>
+        </button>
+
+        <!-- Reject -->
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="flex-1 h-px bg-slate-200"></div>
+            <span class="text-xs text-slate-400">or reject</span>
+            <div class="flex-1 h-px bg-slate-200"></div>
+          </div>
+          <textarea
+            x-model="rejectReason"
+            rows="2"
+            placeholder="Rejection reason (required) — e.g. Memo does not match, amount incorrect..."
+            class="w-full border border-red-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-red-50"
+          ></textarea>
+          <button
+            @click="rejectCase()"
+            :disabled="!rejectReason.trim()"
+            class="mt-2 w-full px-4 py-2.5 rounded-xl border-2 border-red-500 text-red-600 font-semibold text-sm hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            ✕ Reject with reason
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-400 text-center">Approving → student's course unlocks + teacher enrollment count increments</p>
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> the case + an evidence slot that GATES the Approve button</p>
+      <p><strong>User does:</strong> attaches the Zalo proof, then approves (or rejects with a required reason)</p>
+      <p><strong>User expects:</strong> can't approve without evidence; reject tells the student why + offers Retry</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: forcing evidence-before-approve prevents sloppy grants without slowing Admin</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       C3 — ACCESS ROSTER (Admin)
+  ═══════════════════════════════════════════════════════════ -->
+  <div x-show="screen === 'c3-roster'">
+    <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
+      <span class="font-semibold">Step 10 · Admin:</span> The authoritative list of who has paid access to this course, and how they activated.
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
+      <button @click="go('c1-queue')" class="text-indigo-600 hover:underline">← Queue</button>
+      <span>›</span>
+      <span class="text-slate-800 font-medium">Roster — Toán 11</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-slate-800">Roster — Toán 11</h2>
+        <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1.5 rounded-full">24 students with active access</span>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-xs text-slate-500 uppercase border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3">Student</th>
+            <th class="text-left px-4 py-3">Activated via</th>
+            <th class="text-left px-4 py-3">When</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr class="bg-emerald-50">
+            <td class="px-4 py-3 font-medium text-slate-700">
+              Minh N.
+              <span class="text-xs text-emerald-600 ml-1 font-normal">● just approved</span>
+            </td>
+            <td class="px-4 py-3 text-slate-600">Bank transfer</td>
+            <td class="px-4 py-3 text-slate-500">06-23</td>
+          </tr>
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-slate-700">Quan D.</td>
+            <td class="px-4 py-3 text-slate-600">Bank transfer</td>
+            <td class="px-4 py-3 text-slate-500">06-21</td>
+          </tr>
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-slate-700">Linh T.</td>
+            <td class="px-4 py-3 text-slate-600">Bank transfer</td>
+            <td class="px-4 py-3 text-slate-500">06-20</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-2.5 text-slate-400 text-xs italic" colspan="3">… 21 more students</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="px-4 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-400">
+        Path B activation codes → R1 &nbsp;·&nbsp; Export + Revoke → R1
+      </div>
+    </div>
+
+    <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+      <p><strong>User sees:</strong> the source-of-truth list of who has paid access + how</p>
+      <p><strong>User does:</strong> reads / audits; (export + revoke are R1)</p>
+      <p><strong>User expects:</strong> one authoritative roster per course</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: a read roster is enough for MVP (revoke can wait for R1)</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ─── PERSONA HUD (fixed bottom-right) ──────────────────────────────────── -->
+<div class="fixed bottom-4 right-4 z-50 bg-white shadow-xl rounded-2xl border border-slate-200 p-3 text-xs flex flex-col gap-2" style="min-width:168px">
+  <div class="text-slate-500 font-medium">Current role: <span x-text="persona" class="capitalize font-bold text-slate-800"></span></div>
+  <div class="flex gap-1">
+    <button @click="persona='teacher'; go('a1-setup')" class="px-2 py-1 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200 text-xs">Teacher</button>
+    <button @click="persona='student'; go('b1-catalog')" class="px-2 py-1 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs">Student</button>
+    <button @click="persona='admin'; go('c1-queue')" class="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs">Admin</button>
+  </div>
+  <button @click="showAssumptions = !showAssumptions" class="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 text-xs text-left">
+    <span x-text="showAssumptions ? '🙈 Hide assumptions' : '💡 Show assumptions'"></span>
+  </button>
+  <button @click="restart()" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300">↻ Restart</button>
+  <!-- Per-persona screen jump list -->
+  <div x-show="persona === 'teacher'" class="flex flex-col gap-0.5 border-t border-slate-100 pt-2">
+    <button @click="go('a1-setup')" :class="screen==='a1-setup' ? 'bg-violet-100 text-violet-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">A1 Setup course</button>
+    <button @click="go('a2-curriculum')" :class="screen==='a2-curriculum' ? 'bg-violet-100 text-violet-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">A2 Curriculum</button>
+    <button @click="go('a3-lesson-editor')" :class="screen==='a3-lesson-editor' ? 'bg-violet-100 text-violet-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">A3 Lesson editor</button>
+    <button @click="go('a4-overview')" :class="screen==='a4-overview' ? 'bg-violet-100 text-violet-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">A4 Overview</button>
+  </div>
+  <div x-show="persona === 'student'" class="flex flex-col gap-0.5 border-t border-slate-100 pt-2">
+    <button @click="go('b1-catalog')" :class="screen==='b1-catalog' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B1 Catalog</button>
+    <button @click="go('b2-course-page')" :class="screen==='b2-course-page' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B2 Course page</button>
+    <button @click="go('b3a-payment')" :class="screen==='b3a-payment' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B3a Payment</button>
+    <button @click="go('b3b-status')" :class="screen==='b3b-status' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B3b Status tracker</button>
+    <button @click="go('b4-lesson-player')" :class="screen==='b4-lesson-player' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B4 Lesson player</button>
+    <button @click="quizSubmitted = false; quizAnswers = {q1: null, q2: null}; go('b5-practice')" :class="screen==='b5-practice' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B5 Practice</button>
+    <button @click="go('b6-progress')" :class="screen==='b6-progress' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">B6 Progress</button>
+  </div>
+  <div x-show="persona === 'admin'" class="flex flex-col gap-0.5 border-t border-slate-100 pt-2">
+    <button @click="go('c1-queue')" :class="screen==='c1-queue' ? 'bg-emerald-100 text-emerald-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">C1 Queue</button>
+    <button @click="evidenceAttached = false; rejectReason = ''; go('c2-case-detail')" :class="screen==='c2-case-detail' ? 'bg-emerald-100 text-emerald-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">C2 Case detail</button>
+    <button @click="go('c3-roster')" :class="screen==='c3-roster' ? 'bg-emerald-100 text-emerald-700 font-semibold' : 'text-slate-500 hover:bg-slate-50'" class="text-left px-2 py-0.5 rounded text-xs">C3 Roster</button>
+  </div>
+  <!-- Simulate Admin decision (for student demo) -->
+  <div x-show="activationStatus === 'pending' || activationStatus === 'under-review'" class="border-t border-slate-100 pt-2 space-y-1">
+    <p class="text-xs text-slate-400 font-medium">Simulate Admin:</p>
+    <button @click="activationStatus = 'approved'" class="w-full text-left px-2 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100">✔ Approve Minh's case</button>
+    <button @click="activationStatus = 'rejected'; rejectionReason = 'Memo does not match any pending request'" class="w-full text-left px-2 py-0.5 rounded text-xs bg-red-50 text-red-600 hover:bg-red-100">✕ Reject Minh's case</button>
+  </div>
+</div>
+
+<script>
+function app() {
+  return {
+    screen: 'b1-catalog',
+    showAssumptions: true,
+    persona: 'student',
+
+    // Student activation
+    activationStatus: 'none', // 'none' | 'pending' | 'under-review' | 'approved' | 'rejected'
+    rejectionReason: '',
+
+    // Learning gate
+    videoWatched: false,
+    quizSubmitted: false,
+    quizAnswers: { q1: null, q2: null },
+    quizScore: 0,
+
+    // Admin
+    evidenceAttached: false,
+    rejectReason: '',
+
+    go(s) {
+      this.screen = s;
+      window.scrollTo(0, 0);
+    },
+
+    restart() {
+      this.persona = 'student';
+      this.activationStatus = 'none';
+      this.rejectionReason = '';
+      this.videoWatched = false;
+      this.quizSubmitted = false;
+      this.quizAnswers = { q1: null, q2: null };
+      this.quizScore = 0;
+      this.evidenceAttached = false;
+      this.rejectReason = '';
+      this.go('b1-catalog');
+    },
+
+    submitQuiz() {
+      // q1 correct = index 1 (option B: 2x), q2 correct = index 0 (option A: 36)
+      let score = 0;
+      if (this.quizAnswers.q1 === 1) score++;
+      if (this.quizAnswers.q2 === 0) score++;
+      this.quizScore = score;
+      this.quizSubmitted = true;
+    },
+
+    approveCase() {
+      if (!this.evidenceAttached) return;
+      this.activationStatus = 'approved';
+      this.go('c3-roster');
+    },
+
+    rejectCase() {
+      if (!this.rejectReason.trim()) return;
+      this.rejectionReason = this.rejectReason;
+      this.activationStatus = 'rejected';
+      this.go('c1-queue');
+    },
+  }
+}
+</script>
+</body>
+</html>
