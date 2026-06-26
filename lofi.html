@@ -212,13 +212,49 @@
               <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q1e" class="text-indigo-600" /> x</label>
               <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q1e" class="text-indigo-600" /> x²</label>
             </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Lời giải chi tiết Q1 <span class="text-slate-400">(hiển thị sau khi học sinh nộp bài)</span></label>
+              <textarea rows="2" placeholder="Đạo hàm xⁿ = n·xⁿ⁻¹ → f'(x) = 2x..." class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">Vì đạo hàm của xⁿ = n·xⁿ⁻¹, với f(x)=x² thì n=2 → f'(x) = 2x.</textarea>
+            </div>
           </div>
+
+          <!-- Q2 -->
+          <div class="bg-slate-50 rounded-xl p-4 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold text-slate-700">Q2</span>
+              <input type="text" value="Đạo hàm của g(x) = 3x³ tại x = 2 là?" class="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 text-sm font-medium text-emerald-700 cursor-pointer"><input type="radio" name="q2e" checked class="text-indigo-600" /> 36 ✓ (correct)</label>
+              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q2e" class="text-indigo-600" /> 24</label>
+              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q2e" class="text-indigo-600" /> 12</label>
+              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"><input type="radio" name="q2e" class="text-indigo-600" /> 9</label>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Lời giải chi tiết Q2 <span class="text-slate-400">(hiển thị sau khi học sinh nộp bài)</span></label>
+              <textarea rows="2" placeholder="g'(x) = 9x², g'(2) = 9×4 = 36..." class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">g'(x) = 3·3x² = 9x², thay x=2: g'(2) = 9×4 = 36.</textarea>
+            </div>
+          </div>
+
           <button class="text-sm text-indigo-600 hover:underline">+ Add question</button>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1.5">Solution video (for hard problems)</label>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Video giải <span class="text-slate-400 text-xs">(một video, đặt mốc thời gian per câu)</span></label>
             <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-sm hover:border-indigo-400 hover:bg-indigo-50 transition cursor-pointer">
-              ⬆ Upload solution video
+              ⬆ Upload ONE solution video
+            </div>
+            <div class="mt-3 space-y-1.5">
+              <p class="text-xs font-medium text-slate-600">Mốc thời gian:</p>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-500 text-xs w-6">Q1</span>
+                <span class="text-slate-400 text-xs">▸</span>
+                <input type="text" value="0:00" class="w-16 border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-500 text-xs w-6">Q2</span>
+                <span class="text-slate-400 text-xs">▸</span>
+                <input type="text" value="1:45" class="w-16 border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              </div>
             </div>
           </div>
         </div>
@@ -241,7 +277,7 @@
       <p><strong>User sees:</strong> ONE screen capturing both halves of a lesson at once</p>
       <p><strong>User does:</strong> drops a video, attaches PDFs, writes ≥1 MCQ, uploads a solution video, publishes</p>
       <p><strong>User expects:</strong> "post a lesson in minutes, no tech skills" — both halves live together</p>
-      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 the video→quiz pairing matches the teacher's idea of "a lesson"</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 teacher can write per-question lời giải chi tiết AND tag timestamps without it feeling like too much work per lesson</p>
     </div>
   </div>
 
@@ -659,11 +695,11 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════
-       B4 — LESSON PLAYER (Teaching)
+       B4 — LESSON · Bài giảng tab
   ═══════════════════════════════════════════════════════════ -->
   <div x-show="screen === 'b4-lesson-player'">
     <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
-      <span class="font-semibold">Step 7 · Student:</span> Once approved, the course unlocks. Watch the lesson video and download worksheets. Practice unlocks after the video.
+      <span class="font-semibold">Step 7 · Student:</span> Course unlocks — two tabs (Bài giảng / Bài tập rèn luyện) are both always open. No gate. Watch the lecture, download worksheets, then jump to Practice any time.
     </div>
     <div class="text-xs text-slate-500 mb-3 flex items-center gap-1 flex-wrap">
       <button @click="go('b2-course-page')" class="hover:text-indigo-600">Toán 11</button>
@@ -672,6 +708,11 @@
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- Lesson tabs -->
+      <div class="flex border-b border-slate-200">
+        <button class="px-5 py-3 text-sm font-semibold text-indigo-700 border-b-2 border-indigo-600 -mb-px bg-white">Bài giảng</button>
+        <button @click="practiceMode='quiz'; go('b5-practice')" class="px-5 py-3 text-sm text-slate-500 hover:text-indigo-600 hover:bg-slate-50">Bài tập rèn luyện</button>
+      </div>
       <div class="flex min-h-96">
         <!-- Sidebar -->
         <div class="w-52 border-r border-slate-200 bg-slate-50 p-3 overflow-y-auto flex-shrink-0">
@@ -724,19 +765,14 @@
             <button class="ml-auto text-indigo-600 hover:underline text-xs">⬇ Download</button>
           </div>
 
-          <!-- Practice gate -->
-          <div class="border-t border-slate-200 pt-4">
-            <div x-show="!videoWatched" class="flex items-center gap-2 text-sm text-slate-500 mb-3 bg-slate-50 rounded-xl p-3">
-              🔒 Practice unlocks after you watch the video
-            </div>
-            <div x-show="videoWatched" class="flex items-center gap-2 text-sm text-emerald-600 font-medium mb-3 bg-emerald-50 rounded-xl p-3 border border-emerald-200">
-              ✓ Practice unlocked — ready to quiz yourself!
-            </div>
+          <!-- CTA to Practice — always enabled, no gate -->
+          <div class="border-t border-slate-200 pt-4 flex items-center justify-between">
+            <span x-show="videoWatched" class="text-xs text-emerald-600 font-medium">✓ Video đã xem</span>
+            <span x-show="!videoWatched" class="text-xs text-slate-400">Bài tập có thể làm bất kỳ lúc nào</span>
             <button
-              @click="go('b5-practice')"
-              :disabled="!videoWatched"
-              class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
-              → Practice
+              @click="practiceMode='quiz'; go('b5-practice')"
+              class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition">
+              Vào Bài tập rèn luyện →
             </button>
           </div>
         </div>
@@ -748,139 +784,200 @@
     </div>
 
     <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <p><strong>User sees:</strong> the unlocked tree on the left, the lecture + worksheets on the right</p>
-      <p><strong>User does:</strong> watches the video (marks watched), downloads the PDF, moves to Practice</p>
-      <p><strong>User expects:</strong> finishing the video opens the quiz; the tree tracks what's done (✓)</p>
-      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 students accept "watch fully before quiz" gating as natural</p>
+      <p><strong>User sees:</strong> two tabs (Bài giảng active), lecture video + worksheets on the right</p>
+      <p><strong>User does:</strong> watches the video (marks watched), downloads the PDF, then clicks the Bài tập rèn luyện tab or CTA</p>
+      <p><strong>User expects:</strong> Practice is always available — no need to finish the video first</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: students still watch the lecture before practising even with no gate</p>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════
-       B5 — PRACTICE (quiz + solution)
+       B5 — PRACTICE (Bài tập rèn luyện tab)
   ═══════════════════════════════════════════════════════════ -->
   <div x-show="screen === 'b5-practice'">
     <div class="max-w-2xl mx-auto mb-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2.5 text-sm text-blue-900">
-      <span class="font-semibold">Step 8 · Student:</span> Answer the quiz tied to the lesson, get an instant score, and watch the solution video for hard questions.
+      <span class="font-semibold">Step 8 · Student:</span> Bài tập rèn luyện — always open. Pick a sub-mode: Làm quiz (answer + get 3-layer review) or Xem video giải (jump to any question's timestamp in the solution video).
     </div>
-    <div class="flex items-center gap-2 text-sm text-slate-500 mb-5">
-      <button @click="go('b4-lesson-player')" class="text-indigo-600 hover:underline">← Bài 2</button>
-      <span>›</span>
-      <span class="text-slate-800 font-medium">Practice</span>
+    <div class="text-xs text-slate-500 mb-3 flex items-center gap-1 flex-wrap">
+      <button @click="go('b2-course-page')" class="hover:text-indigo-600">Toán 11</button>
+      <span>›</span><span>Ch.1 Đại số</span><span>›</span><span>1.1 Hàm số</span><span>›</span>
+      <span class="text-slate-700 font-medium">Bài 2 — Đạo hàm cơ bản</span>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-      <h2 class="font-bold text-slate-800 mb-1">Practice — Bài 2 "Đạo hàm cơ bản"</h2>
-      <p class="text-sm text-slate-500 mb-5">Answer all questions, then submit for instant scoring.</p>
-
-      <!-- Q1 -->
-      <div class="mb-5 p-4 rounded-xl border border-slate-200 bg-slate-50">
-        <p class="text-sm font-semibold text-slate-800 mb-3">Q1. Nếu f(x) = x², thì f'(x) = ?</p>
-        <div class="space-y-2">
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 0 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 0, 'border-slate-200': quizAnswers.q1 !== 0 || quizSubmitted }">
-            <input type="radio" name="q1s" :value="0" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">A</span>
-            <span>2x</span>
-          </label>
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 1 && !quizSubmitted, 'border-emerald-500 bg-emerald-50': quizSubmitted && quizAnswers.q1 === 1, 'border-emerald-300 bg-emerald-50': quizSubmitted && quizAnswers.q1 !== 1, 'border-slate-200': quizAnswers.q1 !== 1 && !quizSubmitted }">
-            <input type="radio" name="q1s" :value="1" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">B</span>
-            <span>2x</span>
-            <span x-show="quizSubmitted" class="ml-auto text-xs text-emerald-600 font-bold">✓ correct</span>
-          </label>
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 2 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 2, 'border-slate-200': quizAnswers.q1 !== 2 || quizSubmitted }">
-            <input type="radio" name="q1s" :value="2" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">C</span>
-            <span>x</span>
-          </label>
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 3 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 3, 'border-slate-200': quizAnswers.q1 !== 3 || quizSubmitted }">
-            <input type="radio" name="q1s" :value="3" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">D</span>
-            <span>x²</span>
-          </label>
-        </div>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- Lesson tabs — Practice active -->
+      <div class="flex border-b border-slate-200">
+        <button @click="go('b4-lesson-player')" class="px-5 py-3 text-sm text-slate-500 hover:text-indigo-600 hover:bg-slate-50">Bài giảng</button>
+        <button class="px-5 py-3 text-sm font-semibold text-indigo-700 border-b-2 border-indigo-600 -mb-px bg-white">Bài tập rèn luyện</button>
       </div>
 
-      <!-- Q2 -->
-      <div class="mb-5 p-4 rounded-xl border border-slate-200 bg-slate-50">
-        <p class="text-sm font-semibold text-slate-800 mb-3">Q2. Đạo hàm của g(x) = 3x³ tại x = 2 là?</p>
-        <div class="space-y-2">
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 0 && !quizSubmitted, 'border-emerald-500 bg-emerald-50': quizSubmitted && quizAnswers.q2 === 0, 'border-emerald-300 bg-emerald-50': quizSubmitted && quizAnswers.q2 !== 0, 'border-slate-200': quizAnswers.q2 !== 0 && !quizSubmitted }">
-            <input type="radio" name="q2s" :value="0" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">A</span>
-            <span>36</span>
-            <span x-show="quizSubmitted" class="ml-auto text-xs text-emerald-600 font-bold">✓ correct</span>
-          </label>
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 1 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 1, 'border-slate-200': quizAnswers.q2 !== 1 || quizSubmitted }">
-            <input type="radio" name="q2s" :value="1" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">B</span>
-            <span>24</span>
-          </label>
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 2 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 2, 'border-slate-200': quizAnswers.q2 !== 2 || quizSubmitted }">
-            <input type="radio" name="q2s" :value="2" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">C</span>
-            <span>12</span>
-          </label>
-          <label
-            class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
-            :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 3 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 3, 'border-slate-200': quizAnswers.q2 !== 3 || quizSubmitted }">
-            <input type="radio" name="q2s" :value="3" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
-            <span class="font-medium text-slate-500 w-5">D</span>
-            <span>9</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Submit -->
-      <div x-show="!quizSubmitted">
-        <button
-          @click="submitQuiz()"
-          :disabled="quizAnswers.q1 === null || quizAnswers.q2 === null"
-          class="w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed">
-          Submit
-        </button>
-      </div>
-
-      <!-- Result -->
-      <div x-show="quizSubmitted" class="space-y-3">
-        <div :class="quizScore === 2 ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-amber-50 border-amber-300 text-amber-800'" class="border rounded-xl p-4 text-center">
-          <p class="text-3xl font-bold" x-text="quizScore + ' / 2'"></p>
-          <p class="text-sm mt-1" x-text="quizScore === 2 ? 'Perfect score! 🎉' : 'Review the solution video below to understand your misses.'"></p>
+      <div class="p-5">
+        <!-- Sub-mode toggle -->
+        <div class="flex gap-2 mb-5">
+          <button
+            @click="practiceMode='quiz'"
+            :class="practiceMode==='quiz' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            class="px-4 py-2 rounded-xl text-sm font-medium transition">
+            1. Làm quiz
+          </button>
+          <button
+            @click="practiceMode='solution-video'"
+            :class="practiceMode==='solution-video' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            class="px-4 py-2 rounded-xl text-sm font-medium transition">
+            2. Xem video giải
+          </button>
         </div>
 
-        <!-- Solution video -->
-        <div class="bg-slate-900 rounded-2xl p-5 flex items-center gap-4 text-white cursor-pointer hover:bg-slate-800 transition">
-          <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-xl hover:bg-white/30 flex-shrink-0">▶</div>
-          <div>
-            <p class="text-sm font-semibold">▶ Watch solution video</p>
-            <p class="text-xs text-slate-400">Step-by-step walkthrough for Q1 &amp; Q2</p>
+        <!-- ─── Sub-mode: Làm quiz ─────────────────────────────── -->
+        <div x-show="practiceMode === 'quiz'">
+
+          <!-- Q1 -->
+          <div class="mb-4 p-4 rounded-xl border border-slate-200 bg-slate-50">
+            <p class="text-sm font-semibold text-slate-800 mb-3">Q1. Nếu f(x) = x², thì f'(x) = ?</p>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 0 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 0 && quizAnswers.q1 !== 1, 'border-slate-200': (quizAnswers.q1 !== 0 && !quizSubmitted) || (quizSubmitted && quizAnswers.q1 !== 0) }">
+                <input type="radio" name="q1s" :value="0" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">A</span><span>2</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 1 && !quizSubmitted, 'border-emerald-500 bg-emerald-50': quizSubmitted, 'border-slate-200': quizAnswers.q1 !== 1 && !quizSubmitted }">
+                <input type="radio" name="q1s" :value="1" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">B</span><span>2x</span>
+                <span x-show="quizSubmitted" class="ml-auto text-xs text-emerald-600 font-bold">✓ đúng</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 2 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 2, 'border-slate-200': quizAnswers.q1 !== 2 || quizSubmitted }">
+                <input type="radio" name="q1s" :value="2" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">C</span><span>x</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q1 === 3 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q1 === 3, 'border-slate-200': quizAnswers.q1 !== 3 || quizSubmitted }">
+                <input type="radio" name="q1s" :value="3" x-model.number="quizAnswers.q1" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">D</span><span>x²</span>
+              </label>
+            </div>
+            <!-- 3-layer review for Q1 (after submit) -->
+            <div x-show="quizSubmitted" class="mt-3 space-y-1.5 text-sm border-t border-slate-200 pt-3">
+              <div class="flex gap-2">
+                <span class="text-slate-500 w-28 flex-shrink-0">Đáp án của bạn:</span>
+                <span :class="quizAnswers.q1 === 1 ? 'text-emerald-600 font-medium' : 'text-red-600 font-medium'" x-text="['2', '2x', 'x', 'x²'][quizAnswers.q1 ?? 0]"></span>
+              </div>
+              <div class="flex gap-2">
+                <span class="text-slate-500 w-28 flex-shrink-0">Đáp án đúng:</span>
+                <span class="text-emerald-600 font-semibold">2x</span>
+              </div>
+              <div class="bg-blue-50 rounded-xl p-3 text-xs text-slate-700 mt-1">
+                <span class="font-semibold text-blue-800">Lời giải chi tiết:</span>
+                Đạo hàm xⁿ = n·xⁿ⁻¹. Với f(x)=x² thì n=2 → f'(x) = 2·x¹ = 2x.
+              </div>
+              <button @click="practiceMode='solution-video'" class="text-xs text-indigo-600 hover:underline flex items-center gap-1 mt-1">
+                ▶ Xem video giải câu này (0:00)
+              </button>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="mb-4 p-4 rounded-xl border border-slate-200 bg-slate-50">
+            <p class="text-sm font-semibold text-slate-800 mb-3">Q2. Đạo hàm của g(x) = 3x³ tại x = 2 là?</p>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 0 && !quizSubmitted, 'border-emerald-500 bg-emerald-50': quizSubmitted, 'border-slate-200': quizAnswers.q2 !== 0 && !quizSubmitted }">
+                <input type="radio" name="q2s" :value="0" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">A</span><span>36</span>
+                <span x-show="quizSubmitted" class="ml-auto text-xs text-emerald-600 font-bold">✓ đúng</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 1 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 1, 'border-slate-200': quizAnswers.q2 !== 1 || quizSubmitted }">
+                <input type="radio" name="q2s" :value="1" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">B</span><span>24</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 2 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 2, 'border-slate-200': quizAnswers.q2 !== 2 || quizSubmitted }">
+                <input type="radio" name="q2s" :value="2" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">C</span><span>12</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition text-sm"
+                :class="{ 'border-indigo-500 bg-indigo-50': quizAnswers.q2 === 3 && !quizSubmitted, 'border-red-400 bg-red-50': quizSubmitted && quizAnswers.q2 === 3, 'border-slate-200': quizAnswers.q2 !== 3 || quizSubmitted }">
+                <input type="radio" name="q2s" :value="3" x-model.number="quizAnswers.q2" :disabled="quizSubmitted" class="text-indigo-600" />
+                <span class="font-medium text-slate-500 w-5">D</span><span>9</span>
+              </label>
+            </div>
+            <!-- 3-layer review for Q2 (after submit) -->
+            <div x-show="quizSubmitted" class="mt-3 space-y-1.5 text-sm border-t border-slate-200 pt-3">
+              <div class="flex gap-2">
+                <span class="text-slate-500 w-28 flex-shrink-0">Đáp án của bạn:</span>
+                <span :class="quizAnswers.q2 === 0 ? 'text-emerald-600 font-medium' : 'text-red-600 font-medium'" x-text="['36', '24', '12', '9'][quizAnswers.q2 ?? 1]"></span>
+              </div>
+              <div class="flex gap-2">
+                <span class="text-slate-500 w-28 flex-shrink-0">Đáp án đúng:</span>
+                <span class="text-emerald-600 font-semibold">36</span>
+              </div>
+              <div class="bg-blue-50 rounded-xl p-3 text-xs text-slate-700 mt-1">
+                <span class="font-semibold text-blue-800">Lời giải chi tiết:</span>
+                g'(x) = 3·3x² = 9x². Thay x=2: g'(2) = 9×4 = 36.
+              </div>
+              <button @click="practiceMode='solution-video'" class="text-xs text-indigo-600 hover:underline flex items-center gap-1 mt-1">
+                ▶ Xem video giải câu này (1:45)
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div x-show="!quizSubmitted" class="mb-4">
+            <button
+              @click="submitQuiz()"
+              :disabled="quizAnswers.q1 === null || quizAnswers.q2 === null"
+              class="w-full px-4 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed">
+              Nộp bài
+            </button>
+          </div>
+
+          <!-- Score summary (after submit) -->
+          <div x-show="quizSubmitted" class="mb-4">
+            <div :class="quizScore >= 8 ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-amber-50 border-amber-300 text-amber-800'" class="border rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold" x-text="quizScore + ' / 10'"></p>
+              <p class="text-sm mt-1" x-text="quizScore >= 8 ? 'Xuất sắc! 🎉' : 'Xem lời giải chi tiết bên trên hoặc video giải để hiểu thêm.'"></p>
+            </div>
+            <button @click="go('b6-progress')" class="w-full mt-3 px-4 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-600 hover:bg-slate-50">
+              Xem tiến độ →
+            </button>
           </div>
         </div>
 
-        <button @click="go('b6-progress')" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-600 hover:bg-slate-50">
-          View my progress →
-        </button>
-      </div>
-    </div>
+        <!-- ─── Sub-mode: Xem video giải ────────────────────────── -->
+        <div x-show="practiceMode === 'solution-video'">
+          <!-- Video placeholder -->
+          <div class="bg-slate-900 rounded-2xl aspect-video flex flex-col items-center justify-center text-white mb-4 cursor-pointer hover:bg-slate-800 transition">
+            <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-2xl mb-2">▶</div>
+            <p class="text-sm text-slate-300">Video giải — Bài 2 "Đạo hàm cơ bản"</p>
+            <p class="text-xs text-slate-500 mt-1">14:20 · 2 câu</p>
+          </div>
+          <!-- Chapter markers -->
+          <div class="space-y-2">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Mục lục câu hỏi — bấm để nhảy đến</p>
+            <button class="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-50 border border-slate-200 transition">
+              <span class="text-xs bg-slate-800 text-white px-2 py-0.5 rounded-full font-mono flex-shrink-0">0:00</span>
+              <span class="text-sm text-slate-700">Q1 · f(x) = x² → f'(x) = ?</span>
+            </button>
+            <button class="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-50 border border-slate-200 transition">
+              <span class="text-xs bg-slate-800 text-white px-2 py-0.5 rounded-full font-mono flex-shrink-0">1:45</span>
+              <span class="text-sm text-slate-700">Q2 · Đạo hàm của g(x) = 3x³ tại x = 2</span>
+            </button>
+          </div>
+          <button @click="go('b6-progress')" class="w-full mt-4 px-4 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-600 hover:bg-slate-50">
+            Xem tiến độ →
+          </button>
+        </div>
+
+      </div><!-- /p-5 -->
+    </div><!-- /card -->
 
     <div x-show="showAssumptions" class="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
-      <p><strong>User sees:</strong> the quiz tied to the lesson they just watched, then immediate scoring</p>
-      <p><strong>User does:</strong> answers, submits, reviews correct answers, optionally watches the solution video</p>
-      <p><strong>User expects:</strong> instant feedback + a way to understand misses (solution video)</p>
-      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🟠 immediate score + solution video is the "complete the lesson" payoff</p>
+      <p><strong>User sees:</strong> Bài tập rèn luyện tab active, two sub-mode buttons at top</p>
+      <p><strong>User does:</strong> picks Làm quiz → answers → submits → reads 3-layer review per question → optionally jumps to that question's video timestamp</p>
+      <p><strong>User expects:</strong> each question shows: their answer / correct answer / written explanation / video jump</p>
+      <p class="text-amber-700 font-bold">⚠ Riskiest UX assumption: 🔴 the per-question written solution + timestamped video jump is the real learning payoff — the leap past the competitor's flat solution video</p>
     </div>
   </div>
 
@@ -1246,11 +1343,12 @@ function app() {
     activationStatus: 'none', // 'none' | 'pending' | 'under-review' | 'approved' | 'rejected'
     rejectionReason: '',
 
-    // Learning gate
+    // Learning state
     videoWatched: false,
     quizSubmitted: false,
     quizAnswers: { q1: null, q2: null },
     quizScore: 0,
+    practiceMode: 'quiz', // 'quiz' | 'solution-video'
 
     // Admin
     evidenceAttached: false,
